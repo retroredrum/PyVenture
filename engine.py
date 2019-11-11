@@ -43,8 +43,13 @@ def mainGame():
         try:
             if usedObject in inventory:     # checks if object is in inventory
                 if usedObject in curRoomActions[curRoomId]:  # checks if object can be used in that room
-                    print(curRoomActions[curRoomId][3])     # prints the object action description
                     inventory.pop(inventory.index(usedObject))      # removes the object from inventory when used
+                    curRoomActions[curRoomId][4] = True                 # sets the action state to True
+                    curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][0])      # copies the new direction to the room description
+                    curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][1])       # copies the new direction to the room description
+                    print(curRoomActions[curRoomId][2])     # prints the object action description
+                else:
+                    errormessage()
             else:
                 print("You don't have a " + usedObject + " in your inventory")
         except IndexError:
@@ -57,7 +62,7 @@ def mainGame():
         error = random.choice(errorMessage)
         print(error)
 
-    print('Welcome to the haunted house.')
+    print(welcomeMessage)
     look()
 
     while commandInput != 'quit':
@@ -77,7 +82,7 @@ def mainGame():
                 get()
             elif commandInputSplit[0] == 'use':
                 use()
-            elif commandInputSplit[0] in directions:                            # check if one of the directions has been typed
+            elif commandInputSplit[0] in directions:                            # check if one of the directions has been typed -- WIP
                 if commandInputSplit[0] in curRoomDesc[curRoomId][1]:           # check if the type direction is in exits list
                     dirIndex = curRoomDesc[curRoomId][1].index(commandInputSplit[0]) + 1
                     nextRoomId = curRoomDesc[curRoomId][1][dirIndex]
