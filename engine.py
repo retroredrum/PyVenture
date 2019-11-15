@@ -23,7 +23,7 @@ def mainGame():
     def look():
         print(curRoomDesc[curRoomId][2])    # prints the current room description field from list
         if curRoomDesc[curRoomId][3]["object"] == "":
-            print('You see no interesting to take here.')
+            print('You see nothing interesting to take here.')
         else:
             roomItem = curRoomDesc[curRoomId][3]["object"]    # checks if there's an object in the room
             print('You see a ' + roomItem)          # prints the object
@@ -44,8 +44,8 @@ def mainGame():
             if inventory.count(pickedUpObject) == 1:  # checks if object is in inventory
                 print("It's already in your inventory!")
         else:
-            print("OK")
-            inventory.append(pickedUpObject)  # adds object to inventory
+            print("You take: " + curRoomDesc[curRoomId][3]["object"])
+            inventory.append(curRoomDesc[curRoomId][3]["object"])  # adds object to inventory
             curRoomDesc[curRoomId][3]["object"] = ""  # removes object from room
 
     def use():     #    TBD - Add action check from dictionnary
@@ -68,6 +68,9 @@ def mainGame():
 
     def push():
         print(curRoomDesc[curRoomId][3]["action"])
+
+    def examine():
+        print("nothing")
 
     def inputerror():
         print("You can't do that. Use two words maximum. Available commands are: " + verbslist)
