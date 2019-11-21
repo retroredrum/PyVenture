@@ -23,7 +23,7 @@ def mainGame():
     def look():
         print(curRoomDesc[curRoomId][2])    # prints the current room description field from list
         if curRoomDesc[curRoomId][3]["object"] == "":
-            print('You see nothing interesting to take here.')
+            print('')
         else:
             roomItem = curRoomDesc[curRoomId][3]["object"]    # checks if there's an object in the room
             print('You see a ' + roomItem)          # prints the object
@@ -49,8 +49,8 @@ def mainGame():
             curRoomDesc[curRoomId][3]["object"] = ""  # removes object from room
 
     def use():     #    TBD - Add action check from dictionnary
-        usedObject = commandInputSplit[1]   # object to be used
         try:
+            usedObject = commandInputSplit[1]   # object to be used
             if usedObject in inventory:     # checks if object is in inventory
                 if usedObject in curRoomActions[curRoomId]:  # checks if object can be used in that room
                     inventory.pop(inventory.index(usedObject))      # removes the object from inventory when used
@@ -64,12 +64,20 @@ def mainGame():
             else:
                 print("You don't have a " + usedObject + " in your inventory")
         except IndexError:
-            errormessage()
+            print('Use what exactly?')
 
-    def push():
-        print(curRoomDesc[curRoomId][3]["action"])
+    def push(): # WIP
+        curRoomPush = curRoomDesc[curRoomId][3]["push"] # get current room action
+        try:
+            pushedUpObject = commandInputSplit[1]  # splits input to get pushed object name
+            if curRoomPush == pushedUpObject:
+                print('pushed')
+            else:
+                print("There's no " + pushedUpObject + " to push here.")
+        except IndexError:
+            print('Push what exactly?')
 
-    def examine():
+    def examine():  # WIP
         print("nothing")
 
     def inputerror():
@@ -102,6 +110,10 @@ def mainGame():
                 get()
             elif commandInputSplit[0] == 'use':
                 use()
+            elif commandInputSplit[0] == 'push':
+                push()
+            elif commandInputSplit[0] == 'examine':
+                examine()
             elif commandInputSplit[0] in directions:                            # check if one of the directions has been typed -- WIP
                 if commandInputSplit[0] in curRoomDesc[curRoomId][1]:           # check if the type direction is in exits list
                     dirIndex = curRoomDesc[curRoomId][1].index(commandInputSplit[0]) + 1
