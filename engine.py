@@ -54,11 +54,7 @@ def mainGame():
             if usedObject in inventory:     # checks if object is in inventory
                 if usedObject in curRoomActions[curRoomId]:  # checks if object can be used in that room
                     inventory.pop(inventory.index(usedObject))      # removes the object from inventory when used
-                    curRoomActions[curRoomId][4] = True                 # sets the action state to True
-                    curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][0])      # copies the new direction string to the room description
-                    curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][1])       # copies the new direction id to the room description
-                    curRoomDesc[curRoomId][2] = curRoomActions[curRoomId][3]    # replace the original description with the updated one
-                    print(curRoomActions[curRoomId][2])     # prints the object action description
+                    roomUpdate()
                 else:
                     errormessage()
             else:
@@ -71,11 +67,7 @@ def mainGame():
             curRoomPush = curRoomDesc[curRoomId][3]["push"] # get current room action
             pushedUpObject = commandInputSplit[1]  # splits input to get pushed object name
             if curRoomPush == pushedUpObject:
-                curRoomActions[curRoomId][4] = True
-                curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][0])      # copies the new direction string to the room description
-                curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][1])       # copies the new direction id to the room description
-                curRoomDesc[curRoomId][2] = curRoomActions[curRoomId][3]    # replace the original description with the updated one
-                print(curRoomActions[curRoomId][2])     # prints the object action description
+                roomUpdate()
             else:
                 print("There's no " + pushedUpObject + " to push here.")
         except IndexError:
@@ -90,6 +82,13 @@ def mainGame():
     def errormessage():
         error = random.choice(errorMessage)
         print(error)
+
+    def roomUpdate():
+        curRoomActions[curRoomId][4] = True
+        curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][0])      # copies the new direction string to the room description
+        curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][1])       # copies the new direction id to the room description
+        curRoomDesc[curRoomId][2] = curRoomActions[curRoomId][3]    # replace the original description with the updated one
+        print(curRoomActions[curRoomId][2])     # prints the object action description
 
     print(welcomeMessage)
     look()
