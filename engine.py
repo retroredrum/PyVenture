@@ -64,18 +64,22 @@ def mainGame():
             else:
                 print("You don't have a " + usedObject + " in your inventory")
         except IndexError:
-            print('Use what exactly?')
+            print('Use what exactly?') # error message is no second word is typed in
 
     def push(): # WIP
-        curRoomPush = curRoomDesc[curRoomId][3]["push"] # get current room action
         try:
+            curRoomPush = curRoomDesc[curRoomId][3]["push"] # get current room action
             pushedUpObject = commandInputSplit[1]  # splits input to get pushed object name
             if curRoomPush == pushedUpObject:
-                print('pushed')
+                curRoomActions[curRoomId][4] = True
+                curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][0])      # copies the new direction string to the room description
+                curRoomDesc[curRoomId][1].append(curRoomActions[curRoomId][5][1])       # copies the new direction id to the room description
+                curRoomDesc[curRoomId][2] = curRoomActions[curRoomId][3]    # replace the original description with the updated one
+                print(curRoomActions[curRoomId][2])     # prints the object action description
             else:
                 print("There's no " + pushedUpObject + " to push here.")
         except IndexError:
-            print('Push what exactly?')
+            print('Push what exactly?') # error message is no second word is typed in
 
     def examine():  # WIP
         print("nothing")
