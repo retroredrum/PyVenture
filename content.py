@@ -8,7 +8,7 @@ curRoomDesc = [[0, ["n", 1], "You are in a bedroom. All the windows are closed a
                [3, ["n", 4, "e", 1, "s", 5], "You're in the lobby of the house. The front door of the house is locked.", {"action":"", "object":""}],
                [4, ["n", 6, "s", 3], "You're in a messy and dusty kitchen. Obviously it wasn't cleaned for a long time. Silverware and old plates are all over the counters. A side door leads to the garden.", {"action": "","object":"knife"}],
                [5, ["n", 3], "You're in a very fancy living room. A chimney heats the cold house here.", {"action": "","object":"key"}],
-               [6, ["s", 4, "e", 7], "You're in the garden. The grass is cut short and an old oak is the only tree. The garden extends to the south, behind the house.", {"action":"", "object":"", "examine":"rope"}],
+               [6, ["s", 4, "e", 7], "You're in the garden. The grass is cut short and an old oak is the only tree. The garden extends to the south, behind the house.", {"action":"tree", "object":"rope", "examine":"There's a rope hanging from the tree."}],
                [7, ["w", 6], "You're in the back part of the garden. A wooden kiosk is there, with benches all around; a statue stands in the middle. The garden ends with a cliff, that goes down directly in the ocean.",{"push": "statue", "object": ""}],
                [8, ["n", 9, "e", 3], "You're in front of the house on a path that leads north to a dark forest.", {"action":"", "object":""}],
                [9, ["u", 7], "You're underground, below the garden. It's very dark in here and you can't see anything.", {"action":"", "object":""}],
