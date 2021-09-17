@@ -73,8 +73,8 @@ def mainGame():
         except IndexError:
             print('Push what exactly?') # error message is no second word is typed in
 
-    def examine():  # WIP
-        print("nothing")
+    def examine():
+        print(curRoomDesc[curRoomId][3]["examine"])
 
     def inputerror():
         print("You can't do that. Use two words maximum. Available commands are: " + verbslist)
