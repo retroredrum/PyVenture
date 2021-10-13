@@ -21,7 +21,7 @@ def mainGame():
 
     def exits():
         exitsList = str(curRoomDesc[curRoomId][1][0::2]).strip("[]")
-        print('Possible exits are ' + bcolors.RED + exitsList + bcolors.ENDC)                                # prints the exits available
+        print('Possible exits are ' + bcolors.RED + exitsList + bcolors.ENDC)   # prints the exits available
 
     def look():
         print(curRoomDesc[curRoomId][2])                                        # prints the current room description field from list
@@ -29,7 +29,7 @@ def mainGame():
             print('')
         else:
             roomItem = curRoomDesc[curRoomId][3]["object"]                      # checks if there's an object in the room
-            print('You see a ' + bcolors.OKGREEN + roomItem + bcolors.ENDC)                                      # prints the object
+            print('You see a ' + bcolors.OKGREEN + roomItem + bcolors.ENDC)     # prints the object
         exits()
         
     def inv():
