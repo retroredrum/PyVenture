@@ -42,14 +42,17 @@ def mainGame():
 
     def get():                                                                  # TBD - Add action check from dictionnary
         pickedUpObject = commandInputSplit[1]                                   # splits input to get object name
-        if curRoomDesc[curRoomId][3]["object"] == "":                           # checks if object is in the current room
-            print("There's no " + pickedUpObject + " here")
-            if inventory.count(pickedUpObject) == 1:                            # checks if object is in inventory
-                print("It's already in your inventory!")
-        else:
-            print("You take: " + curRoomDesc[curRoomId][3]["object"])
+        
+        if curRoomDesc[curRoomId][3]["object"] == pickedUpObject:
+            print("You pick up: " + bcolors.OKGREEN + curRoomDesc[curRoomId][3]["object"] + bcolors.ENDC) 
             inventory.append(curRoomDesc[curRoomId][3]["object"])               # adds object to inventory
             curRoomDesc[curRoomId][3]["object"] = ""                            # removes object from room
+
+        elif inventory.count(pickedUpObject) == 1:                              # checks if object is in inventory
+            print("It's already in your inventory!")                                    
+
+        else:                                                                   # checks if object is in the current room
+            print("There's no " + bcolors.OKGREEN + pickedUpObject + bcolors.ENDC + " here or you can't pick that up")
 
     def use():                                                                  # TBD - Add action check from dictionnary
         try:
