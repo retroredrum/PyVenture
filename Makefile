@@ -1,7 +1,7 @@
 PYTHON ?= python3
 PROJECT ?= examples/mini-game/game.yaml
 
-.PHONY: help install install-dev play play-gui legacy test test-gui lint format validate editor convert-legacy golden clean
+.PHONY: help install install-dev play play-gui legacy test test-gui test-editor lint format validate editor convert-legacy golden clean
 
 help:
 	@echo "PyVenture — commandes disponibles"
@@ -13,6 +13,7 @@ help:
 	@echo "  make legacy        Lance le moteur historique"
 	@echo "  make test          Lance pytest"
 	@echo "  make test-gui      Lance les tests pygame en headless"
+	@echo "  make test-editor   Lance les tests de l'éditeur (xvfb-run)"
 	@echo "  make lint          Vérifie le style avec Ruff"
 	@echo "  make format        Formate le code avec Ruff"
 	@echo "  make validate      Valide le projet d'exemple"
@@ -41,6 +42,9 @@ test:
 
 test-gui:
 	SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy $(PYTHON) -m pytest -m gui
+
+test-editor:
+	xvfb-run -a $(PYTHON) -m pytest -m editor
 
 lint:
 	$(PYTHON) -m ruff check .

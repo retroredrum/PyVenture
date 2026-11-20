@@ -11,7 +11,7 @@ Un moteur d'aventure texte à l'ancienne, dans l'esprit de Zork, avec des illust
 - ✅ **Nouveau moteur data-driven** : chargement YAML, parseur multilingue, interactions déclaratives, sauvegarde, mode terminal.
 - ✅ Projet d'exemple jouable en FR et EN (`examples/mini-game`).
 - ✅ **Fenêtre pygame** : art pixel art, transcript, inventaire, saisie, menu, thème clair/sombre, transitions.
-- 🚧 Éditeur Tkinter (Phase 3) : voir la [roadmap](docs/03-roadmap.md).
+- ✅ **Éditeur Tkinter** : pièces, objets, interactions, messages, fins, validation, YAML, undo/redo, aperçu.
 
 **Décisions clés** : pygame-ce pour le jeu (320×180), Tkinter/ttk pour l'éditeur, YAML + schéma JSON pour le contenu, FR/EN, Linux d'abord, licence MIT.
 
@@ -48,6 +48,20 @@ La fenêtre graphique nécessite pygame : `pip install -e ".[gui]"`. Le mode ter
 Dans la fenêtre : `Échap` ouvre le menu, `Tab` complète, `↑`/`↓` parcourt l'historique, la molette et `PageUp`/`PageDown` font défiler le texte.
 
 Commandes : `regarder`, `prendre <objet>`, `lâcher <objet>`, `utiliser <objet>`, `examiner <objet>`, `inventaire`, `score`, directions (`n/s/e/w/u/d`, `nord`…), `sauvegarder`, `charger`, `annuler`, `langue en`, `quitter`. En anglais : `look`, `take`, `drop`, `use`, `examine`, `inventory`, `score`, `north`…
+
+## Éditer le contenu
+
+L'éditeur graphique (Tkinter) permet de créer et modifier pièces, objets, interactions, messages et fins, sans écrire de YAML.
+
+```bash
+sudo apt install python3-tk        # paquet système requis (Linux)
+python3 -m pyventure editor
+python3 -m pyventure editor examples/mini-game/game.yaml
+```
+
+![Éditeur : arbre du projet, formulaire de pièce, onglets Formulaire / YAML / Validation.](docs/images/editor.png)
+
+Il propose un arbre de projet, des formulaires par langue, un éditeur de sorties, un onglet YAML synchronisé, la validation en continu, undo/redo, autosave/backups et un bouton pour lancer le jeu.
 
 ## Objectifs
 

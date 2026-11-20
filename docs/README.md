@@ -37,4 +37,5 @@ Ce dossier contient le plan de développement et les spécifications du projet.
 - **Phase 0 (cadrage)** : terminée, décisions validées.
 - **Phase 1 (moteur + terminal)** : terminée. Moteur data-driven, parseur, règles, sauvegarde, autosave, terminal et migration du contenu historique.
 - **Phase 2 (fenêtre pygame)** : terminée. La fenêtre joue le jeu complet (art pixel, transcript, inventaire, saisie, menu, thème clair/sombre, taille de police, transitions).
+- **Phase 3 (éditeur Tkinter)** : terminée. Arbre de projet, formulaires par langue, sorties, YAML synchronisé, validation, undo/redo, autosave/backups, lancement du jeu.
 - Le moteur historique (`start.py`, `engine.py`, `content.py`) reste jouable via `python3 -m pyventure play --legacy`.

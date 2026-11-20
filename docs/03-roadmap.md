@@ -132,38 +132,42 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 
 ---
 
-## Phase 3 — Éditeur MVP
+## Phase 3 — Éditeur MVP (terminée)
 
 **Objectif :** éditer le contenu sans toucher au YAML.
 
 ### 3.1 Document et shell
 
-- [ ] `ProjectDocument` + pile d'undo/redo maison
-- [ ] Ouvrir/créer/sauvegarder un projet
-- [ ] Projets récents, autosave, backups
-- [ ] Arbre de projet
-- [ ] Barre d'état et panneau de validation
+- [x] `ProjectDocument` + pile d'undo/redo maison
+- [x] Ouvrir/créer/sauvegarder un projet
+- [x] Autosave et backups (`.pyventure/`)
+- [ ] Projets récents
+- [x] Arbre de projet
+- [x] Barre d'état et panneau de validation
 
 ### 3.2 Formulaires
 
-- [ ] Pièce : noms/descriptions par langue, art, sorties, variantes, effets d'entrée
-- [ ] Objet : noms, synonymes, description, emplacement, portabilité, états, art
-- [ ] Interaction : verbes, objets, conditions, effets, `once`, priorité
-- [ ] Messages : clé + traductions
-- [ ] Flags, compteurs, fins
-- [ ] Onglet YAML avancé synchronisé
+- [x] Pièce : noms/descriptions par langue, art, sorties, variantes, effets d'entrée
+- [x] Objet : noms, synonymes, description, emplacement, portabilité, états, art
+- [x] Interaction : verbes, objets, conditions, effets, `once`, priorité
+- [x] Messages : clé + traductions
+- [x] Flags, compteurs, fins
+- [x] Onglet YAML avancé synchronisé
 
 ### 3.3 Confort
 
-- [ ] Aperçu du jeu (sous-processus pygame ou aperçu statique)
+- [x] Aperçu du jeu (lancement du jeu pygame en sous-processus)
 - [ ] Hot reload à la sauvegarde
-- [ ] Validation en continu et navigation vers l'erreur
-- [ ] Création d'un projet guidée
-- [ ] Undo/redo et indicateur de modifications
+- [x] Validation en continu (panneau dédié)
+- [ ] Navigation vers l'élément fautif depuis la validation
+- [x] Création d'un projet guidée (identifiant, titre, langues)
+- [x] Undo/redo et indicateur de modifications
 - [ ] Duplication de pièce/objet/interaction
-- [ ] Renommage d'ID avec mise à jour des références
+- [x] Renommage d'ID avec mise à jour des références
 
 **Critère de sortie :** créer un petit jeu de 3 pièces, 2 objets et 2 interactions entièrement dans l'éditeur, le valider et y jouer.
+
+**État :** terminée. L'éditeur Tkinter permet de créer, éditer, valider et lancer un projet. Restent les projets récents, le hot reload, la navigation d'erreur et la duplication.
 
 **Effort indicatif :** 7 à 10 jours.
 

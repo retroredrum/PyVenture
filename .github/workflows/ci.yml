@@ -28,6 +28,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,gui]"
 
+      - name: Install Tk and Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb
+
       - name: Lint
         run: ruff check .
 
@@ -35,10 +40,13 @@ jobs:
         run: ruff format --check .
 
       - name: Tests
-        run: pytest -m "not gui"
+        run: pytest -m "not gui and not editor"
 
       - name: GUI tests (headless)
         run: SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy pytest -m gui
+
+      - name: Editor tests (headless)
+        run: xvfb-run -a pytest -m editor
 
       - name: Validate example projects
         run: |

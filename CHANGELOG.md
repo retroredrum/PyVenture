@@ -7,6 +7,16 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Ajouté — Phase 3 (éditeur Tkinter)
+
+- `pyventure/editor/` : fenêtre Tkinter avec arbre de projet (pièces, objets, interactions, messages, fins, flags), formulaires par langue et onglets Formulaire / YAML / Validation.
+- Formulaires : métadonnées, pièce (avec éditeur de sorties), objet (synonymes, emplacements, états), interaction (verbes, objets, conditions/effets YAML avec modèles), message, fin, flags et compteurs.
+- `ProjectDocument` : chargement/sauvegarde round-trip (commentaires préservés), undo/redo, validation, renommage d'ID avec mise à jour des références.
+- Autosave et backups dans `.pyventure/`, indicateur de modifications, création de projet guidée.
+- Onglet YAML synchronisé avec application contrôlée, panneau de validation, bouton « Jouer » (sous-processus pygame).
+- `python3 -m pyventure editor` et option de projet.
+- Tests : 31 (document sans Tk + interface Tkinter sous Xvfb).
+
 ### Ajouté — Phase 2 (fenêtre pygame)
 
 - Fenêtre graphique `pyventure/ui/pygame/` : art pixel art en haut, transcript défilant au centre, inventaire à droite, saisie en bas.

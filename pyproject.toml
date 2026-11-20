@@ -76,6 +76,7 @@ testpaths = ["tests"]
 addopts = "-q"
 markers = [
   "gui: tests requiring a graphical display (use SDL_VIDEODRIVER=dummy)",
+  "editor: tests requiring Tkinter and a display (use xvfb-run)",
   "slow: tests that take more than a few seconds",
 ]
 

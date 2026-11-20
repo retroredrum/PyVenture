@@ -204,9 +204,9 @@ Le mode debug est activé par `--debug` ou une variable d'environnement, jamais 
 ```bash
 pytest                              # tous les tests
 pytest tests/core                   # moteur uniquement
-pytest -m "not gui"                 # sans pygame
-SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy pytest tests/ui
-xvfb-run -a pytest tests/editor     # si Tkinter a besoin d'un affichage
+pytest -m "not gui and not editor"  # sans interface
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy pytest -m gui
+xvfb-run -a pytest -m editor        # éditeur Tkinter headless
 ```
 
 Types de tests :
@@ -215,7 +215,7 @@ Types de tests :
 - **Golden** : suite de commandes → transcript attendu.
 - **Validation** : projets valides/invalides.
 - **UI** : rendu pygame headless (`SDL_VIDEODRIVER=dummy`).
-- **Éditeur** : formulaires Tkinter sous `xvfb-run` si disponible.
+- **Éditeur** : document sans Tk, et interface Tkinter sous `xvfb-run`.
 - **Round-trip** : YAML → modèle → YAML.
 
 ## 11. CI
