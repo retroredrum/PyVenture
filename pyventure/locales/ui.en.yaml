@@ -1,0 +1,83 @@
+# Interface strings — English
+menu.file: File
+menu.edit: Edit
+menu.project: Project
+menu.help: Help
+menu.new_game: New game
+menu.save: Save
+menu.load: Load
+menu.quit: Quit
+menu.language: Language
+
+game.welcome: "Welcome to {title}."
+game.saved: "Game saved."
+game.loaded: "Game loaded."
+game.ended: "The end."
+game.quit: "See you soon."
+game.unknown_language: "Unknown language: {code}."
+game.language_list: "Available languages: {languages}."
+game.language_set: "Language: {code}."
+game.no_save: "No save found."
+game.undone: "Move undone."
+game.nothing_to_undo: "Nothing to undo."
+game.replay_hint: "Type \"quit\" to stop."
+game.resumed: "Game resumed automatically. Use --fresh to start over."
+game.autosave_failed: "Automatic save failed."
+game.new_game: "New game."
+
+menu.title: "Menu"
+menu.theme: "Theme: {theme}"
+menu.font_size: "Text size: {size}"
+menu.hint: "Esc: menu"
+
+theme.dark: "dark"
+theme.light: "light"
+font.small: "small"
+font.normal: "normal"
+font.large: "large"
+
+debug.gave: "Added {object} to inventory."
+debug.unknown_object: "Unknown object: {name}."
+debug.unknown: "Unknown debug command."
+
+command.prompt: "What now? "
+command.unknown_verb: "I don't understand \"{verb}\"."
+command.unknown_object: "You don't see \"{name}\" here."
+command.ambiguous: "Several objects match \"{name}\". Please be more specific."
+
+parser.empty: "Type a command, or \"help\" for the list."
+parser.go_where: "Go where?"
+
+room.you_see: "You see: {objects}"
+exits.title: "Exits: {exits}"
+inventory.empty: "You are carrying nothing."
+inventory.title: "You are carrying:"
+
+get.what: "Take what?"
+get.already: "You already have {object}."
+get.not_here: "There is no {object} here."
+get.cant: "You can't take {object}."
+get.taken: "You take {object}."
+drop.what: "Drop what?"
+drop.not_carrying: "You are not carrying {object}."
+drop.dropped: "You drop {object}."
+
+go.cant: "You can't go that way."
+go.locked: "It is locked."
+
+wait.nothing: "Time passes."
+help.text: "Verbs: look, get, drop, use, push, examine, inventory, go, wait, score, quit. Directions: north, south, east, west, up, down."
+score.text: "Score: {score} / {max}."
+
+error.generic: "You can't do that here."
+
+direction.n: north
+direction.s: south
+direction.e: east
+direction.w: west
+direction.u: up
+direction.d: down
+direction.in: in
+direction.out: out
+
+editor.title: "PyVenture Editor"

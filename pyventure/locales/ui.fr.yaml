@@ -1,0 +1,83 @@
+# Chaînes d'interface — français
+menu.file: Fichier
+menu.edit: Édition
+menu.project: Projet
+menu.help: Aide
+menu.new_game: Nouvelle partie
+menu.save: Sauvegarder
+menu.load: Charger
+menu.quit: Quitter
+menu.language: Langue
+
+game.welcome: "Bienvenue dans {title}."
+game.saved: "Partie sauvegardée."
+game.loaded: "Partie chargée."
+game.ended: "Fin de la partie."
+game.quit: "À bientôt."
+game.unknown_language: "Langue inconnue : {code}."
+game.language_list: "Langues disponibles : {languages}."
+game.language_set: "Langue : {code}."
+game.no_save: "Aucune sauvegarde trouvée."
+game.undone: "Coup annulé."
+game.nothing_to_undo: "Rien à annuler."
+game.replay_hint: "Tapez « quitter » pour arrêter."
+game.resumed: "Partie reprise automatiquement (--fresh pour recommencer)."
+game.autosave_failed: "Échec de la sauvegarde automatique."
+game.new_game: "Nouvelle partie."
+
+menu.title: "Menu"
+menu.theme: "Thème : {theme}"
+menu.font_size: "Taille du texte : {size}"
+menu.hint: "Échap : menu"
+
+theme.dark: "sombre"
+theme.light: "clair"
+font.small: "petite"
+font.normal: "normale"
+font.large: "grande"
+
+debug.gave: "{object} ajouté à l'inventaire."
+debug.unknown_object: "Objet inconnu : {name}."
+debug.unknown: "Commande de debug inconnue."
+
+command.prompt: "Que faites-vous ? "
+command.unknown_verb: "Je ne comprends pas « {verb} »."
+command.unknown_object: "Vous ne voyez pas « {name} » ici."
+command.ambiguous: "Plusieurs objets correspondent à « {name} ». Précisez."
+
+parser.empty: "Tapez une commande, ou « aide » pour la liste."
+parser.go_where: "Aller où ?"
+
+room.you_see: "Vous voyez : {objects}"
+exits.title: "Sorties : {exits}"
+inventory.empty: "Vous ne portez rien."
+inventory.title: "Vous portez :"
+
+get.what: "Prendre quoi ?"
+get.already: "Vous avez déjà {object}."
+get.not_here: "Il n'y a pas de {object} ici."
+get.cant: "Vous ne pouvez pas prendre {object}."
+get.taken: "Vous prenez {object}."
+drop.what: "Lâcher quoi ?"
+drop.not_carrying: "Vous ne portez pas {object}."
+drop.dropped: "Vous lâchez {object}."
+
+go.cant: "Vous ne pouvez pas aller par là."
+go.locked: "C'est verrouillé."
+
+wait.nothing: "Le temps passe."
+help.text: "Verbes : regarder, prendre, lâcher, utiliser, pousser, examiner, inventaire, aller, attendre, score, quitter. Directions : nord, sud, est, ouest, haut, bas."
+score.text: "Score : {score} / {max}."
+
+error.generic: "Ce n'est pas possible ici."
+
+direction.n: nord
+direction.s: sud
+direction.e: est
+direction.w: ouest
+direction.u: haut
+direction.d: bas
+direction.in: dedans
+direction.out: dehors
+
+editor.title: "Éditeur PyVenture"

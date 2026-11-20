@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyventure"
+version = "0.1.0"
+description = "Moteur d'aventure texte avec illustrations pixel art et éditeur de contenu."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "retroredrum" }]
+license = { text = "MIT" }
+keywords = ["adventure", "text-adventure", "game-engine", "pixel-art", "i18n"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: X11 Applications",
+  "Intended Audience :: End Users/Desktop",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Games/Entertainment",
+]
+dependencies = [
+  "ruamel.yaml>=0.18",
+  "jsonschema>=4.22",
+  "rich>=13.7",
+]
+
+[project.optional-dependencies]
+gui = [
+  "pygame-ce>=2.4",
+  "Pillow>=10.0",
+]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.5",
+  "pre-commit>=3.7",
+]
+all = [
+  "pygame-ce>=2.4",
+  "Pillow>=10.0",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.5",
+  "pre-commit>=3.7",
+]
+
+[project.scripts]
+pyventure = "pyventure.cli:main"
+pyventure-editor = "pyventure.editor.app:main"
+
+[project.urls]
+Homepage = "https://github.com/retroredrum/PyVenture"
+Issues = "https://github.com/retroredrum/PyVenture/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyventure"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["pyventure", "tests"]
+# Le moteur historique est conservé tel quel jusqu'à la Phase 1.
+extend-exclude = ["engine.py", "content.py", "start.py", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "gui: tests requiring a graphical display (use SDL_VIDEODRIVER=dummy)",
+  "slow: tests that take more than a few seconds",
+]
+
+[tool.coverage.run]
+source = ["pyventure"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

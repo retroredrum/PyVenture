@@ -1,0 +1,245 @@
+format: pyventure-game
+format_version: 1
+
+meta:
+  id: mini-game
+  title:
+    fr: La Lampe Oubliée
+    en: The Forgotten Lamp
+  description:
+    fr: Un petit exemple de projet PyVenture, jouable en français et en anglais.
+    en: A small PyVenture example project, playable in French and English.
+  default_language: fr
+  start_room: bedroom
+  version: "0.1.0"
+  max_score: 20
+  art:
+    width: 320
+    height: 180
+    scale: 3
+
+languages: [fr, en]
+
+flags:
+  cave_lit: false
+  vault_open: false
+
+counters:
+  score: 0
+
+vocabulary:
+  verbs:
+    fr:
+      prendre: get
+      ramasser: get
+      regarder: look
+      examiner: look
+      utiliser: use
+      pousser: push
+      aller: go
+      inventaire: inventory
+      quitter: quit
+      aide: help
+    en:
+      get: get
+      take: get
+      look: look
+      examine: look
+      use: use
+      push: push
+      go: go
+      inventory: inventory
+      quit: quit
+      help: help
+  directions:
+    fr:
+      nord: n
+      sud: s
+      est: e
+      ouest: w
+      haut: u
+      bas: d
+    en:
+      north: n
+      south: s
+      east: e
+      west: w
+      up: u
+      down: d
+  prepositions:
+    fr:
+      dans: in
+      sur: on
+      avec: with
+    en:
+      in: in
+      on: on
+      with: with
+
+messages:
+  flashlight_on:
+    fr: "Vous allumez la lampe. La grotte s'éclaire et révèle une porte de fer à l'est."
+    en: "You switch on the lamp. The cave lights up and reveals an iron door to the east."
+  vault_open:
+    fr: "La clé tourne dans la serrure. La porte s'ouvre sur une salle remplie de trésors."
+    en: "The key turns in the lock. The door opens onto a room full of treasures."
+  door_locked:
+    fr: "La porte de fer est verrouillée."
+    en: "The iron door is locked."
+
+rooms:
+  bedroom:
+    name:
+      fr: Chambre
+      en: Bedroom
+    description:
+      fr: |
+        Vous êtes dans une chambre poussiéreuse. Un lit défait occupe le centre.
+        Une lampe torche traîne sur la table de nuit. La sortie est au nord.
+      en: |
+        You are in a dusty bedroom. An unmade bed sits in the middle.
+        A flashlight lies on the nightstand. The exit is to the north.
+    art: rooms/bedroom.png
+    exits:
+      n: corridor
+
+  corridor:
+    name:
+      fr: Couloir
+      en: Corridor
+    description:
+      fr: |
+        Un couloir étroit et sombre. Une faible lueur vient du nord.
+        La chambre est au sud.
+      en: |
+        A narrow, dark corridor. A faint glow comes from the north.
+        The bedroom is to the south.
+    art: rooms/corridor.png
+    exits:
+      s: bedroom
+      n: cave
+
+  cave:
+    name:
+      fr: Grotte
+      en: Cave
+    description:
+      fr: |
+        Une grotte humide. L'obscurité est presque totale.
+        Un passage descend vers le sud.
+      en: |
+        A damp cave. The darkness is almost total.
+        A passage leads south.
+    art: rooms/cave.png
+    variants:
+      lit:
+        description:
+          fr: |
+            La lampe révèle des parois couvertes de mousse et une lourde porte de fer à l'est.
+            Le passage vers le sud est toujours là.
+          en: |
+            The lamp reveals moss-covered walls and a heavy iron door to the east.
+            The passage south is still there.
+        art: rooms/cave_lit.png
+    exits:
+      s: corridor
+      e:
+        room: vault
+        when:
+          - flag: cave_lit
+        locked_message: door_locked
+        hidden: true
+
+  vault:
+    name:
+      fr: Salle au trésor
+      en: Treasure Room
+    description:
+      fr: |
+        Une petite salle voûtée. Des coffres ouverts débordent de pièces d'or.
+        Une clé en fer repose sur un socle.
+      en: |
+        A small vaulted room. Open chests overflow with gold coins.
+        An iron key rests on a pedestal.
+    art: rooms/vault.png
+    exits:
+      w: cave
+
+objects:
+  flashlight:
+    name:
+      fr: lampe torche
+      en: flashlight
+    synonyms:
+      fr: [lampe, torche]
+      en: [torch, light]
+    description:
+      fr: Une lampe torche en métal, encore en état de marche.
+      en: A metal flashlight, still working.
+    location: bedroom
+    portable: true
+    art: objects/flashlight.png
+    states:
+      off:
+        description:
+          fr: La lampe est éteinte.
+          en: The flashlight is off.
+      on:
+        description:
+          fr: La lampe est allumée.
+          en: The flashlight is on.
+    initial_state: off
+
+  key:
+    name:
+      fr: clé en fer
+      en: iron key
+    synonyms:
+      fr: [clé, cle]
+      en: [key]
+    description:
+      fr: Une lourde clé en fer, couverte de rouille.
+      en: A heavy iron key, covered in rust.
+    location: vault
+    portable: true
+    art: objects/key.png
+
+interactions:
+  - id: light-cave
+    verbs: [use]
+    objects: [flashlight]
+    when:
+      - room: cave
+      - not_flag: cave_lit
+    effects:
+      - say: flashlight_on
+      - set_flag: cave_lit
+      - set_object_state: {object: flashlight, state: on}
+      - set_room_variant: {room: cave, variant: lit}
+    once: true
+
+  - id: open-vault
+    verbs: [use]
+    objects: [key]
+    when:
+      - room: vault
+    effects:
+      - say: vault_open
+      - set_flag: vault_open
+      - add_counter: {name: score, delta: 10}
+      - end_game: escaped
+    once: true
+
+endings:
+  escaped:
+    title:
+      fr: Évasion
+      en: Escape
+    text:
+      fr: |
+        Vous ressortez de la caverne, la clé et le trésor en main.
+        La lumière du jour vous accueille.
+      en: |
+        You emerge from the cave, key and treasure in hand.
+        Daylight welcomes you.
+    art: endings/escaped.png

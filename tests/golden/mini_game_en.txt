@@ -1,0 +1,51 @@
+Welcome to The Forgotten Lamp.
+Bedroom
+You are in a dusty bedroom. An unmade bed sits in the middle.
+A flashlight lies on the nightstand. The exit is to the north.
+
+You see: flashlight
+Exits: north
+> look
+Bedroom
+You are in a dusty bedroom. An unmade bed sits in the middle.
+A flashlight lies on the nightstand. The exit is to the north.
+
+You see: flashlight
+Exits: north
+> take flashlight
+You take flashlight.
+> n
+Corridor
+A narrow, dark corridor. A faint glow comes from the north.
+The bedroom is to the south.
+
+Exits: south, north
+> n
+Cave
+A damp cave. The darkness is almost total.
+A passage leads south.
+
+Exits: south
+> e
+The iron door is locked.
+> use flashlight
+You switch on the lamp. The cave lights up and reveals an iron door to the east.
+> examine flashlight
+flashlight
+The flashlight is on.
+> e
+Treasure Room
+A small vaulted room. Open chests overflow with gold coins.
+An iron key rests on a pedestal.
+
+You see: iron key
+Exits: west
+> take key
+You take iron key.
+> use key
+The key turns in the lock. The door opens onto a room full of treasures.
+Escape
+You emerge from the cave, key and treasure in hand.
+Daylight welcomes you.
+
+The end.

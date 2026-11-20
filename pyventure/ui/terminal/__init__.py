@@ -1,0 +1,1 @@
+"""Rendu terminal du moteur."""

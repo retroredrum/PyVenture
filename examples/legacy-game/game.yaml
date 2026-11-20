@@ -1,0 +1,248 @@
+# Généré par tools/convert_legacy.py depuis content.py.
+# Conversion meilleur effort : à retravailler dans l'éditeur.
+format: pyventure-game
+format_version: 1
+meta:
+  id: legacy-house
+  title: The Old House (legacy)
+  default_language: en
+  start_room: room-7
+  version: 0.1.0
+  max_score: 0
+  art:
+    width: 320
+    height: 180
+    scale: 3
+languages:
+  - en
+objects:
+# TODO: descriptions d'objets génériques, à affiner.
+  flashlight:
+    name: flashlight
+    description: A flashlight.
+    location: room-0
+    portable: true
+  doll:
+    name: doll
+    description: A doll.
+    location: room-2
+    portable: true
+  knife:
+    name: knife
+    description: A knife.
+    location: room-4
+    portable: true
+  key:
+    name: key
+    description: A key.
+    location: room-5
+    portable: true
+  rope:
+    name: rope
+    description: There's a rope hanging from the tree.
+    location: room-6
+    portable: true
+  statue:
+    name: statue
+    description: A statue.
+    location: room-7
+    portable: false
+  tree:
+    name: tree
+    description: A tree.
+    location: room-6
+    portable: false
+flags:
+  room-3_changed: false
+  room-7_changed: false
+  room-9_changed: false
+counters:
+  score: 0
+vocabulary:
+  verbs:
+    en:
+      get: get
+      take: get
+      look: look
+      examine: look
+      use: use
+      push: push
+      go: go
+      inv: inventory
+      inventory: inventory
+      quit: quit
+  directions:
+    en:
+      n: n
+      north: n
+      s: s
+      south: s
+      e: e
+      east: e
+      w: w
+      west: w
+      u: u
+      up: u
+      d: d
+      down: d
+messages:
+  room_3_action: The front door is now unlocked
+  room_7_action: As you push the statue, you hear a click. As the ground starts 
+    to shake, you jump quickly out of the kiosk and a see a wooden panel opening
+    in the ground, revealing a staircase.
+  room_9_action: You switch the flashlight on and can see better now. You're in 
+    a cave and notice a tunnel leading east.
+rooms:
+  room-0:
+    name: Room 0
+    description: You are in a bedroom. All the windows are closed and the only 
+      exit is a door on the north wall.
+    exits:
+      n: room-1
+  room-1:
+    name: Room 1
+    description: You're in a dark corridor. The only window is blocked by 
+      shutters. A faint blinking light shows a door to the north and a passage 
+      to the west.
+    exits:
+      n: room-2
+      w: room-3
+      s: room-0
+  room-2:
+    name: Room 2
+    description: Another bedroom. Obviously a child's room. Creepy dools are 
+      aligned on a shelf of the eastern wall. One of them is newer and cleaner.
+    exits:
+      s: room-1
+  room-3:
+    name: Room 3
+    description: You're in the lobby of the house. The front door of the house 
+      is locked.
+    exits:
+      n: room-4
+      e: room-1
+      s: room-5
+    variants:
+      changed:
+        description: You're in the lobby of the house. The front door of the 
+          house is unlocked.
+  room-4:
+    name: Room 4
+    description: You're in a messy and dusty kitchen. Obviously it wasn't 
+      cleaned for a long time. Silverware and old plates are all over the 
+      counters. A side door leads to the garden.
+    exits:
+      n: room-6
+      s: room-3
+  room-5:
+    name: Room 5
+    description: You're in a very fancy living room. A chimney heats the cold 
+      house here.
+    exits:
+      n: room-3
+  room-6:
+    name: Room 6
+    description: You're in the garden. The grass is cut short and an old oak is 
+      the only tree. The garden extends to the south, behind the house.
+    exits:
+      s: room-4
+      e: room-7
+  room-7:
+    name: Room 7
+    description: You're in the back part of the garden. A wooden kiosk is there,
+      with benches all around; a statue stands in the middle. The garden ends 
+      with a cliff, that goes down directly in the ocean.
+    exits:
+      w: room-6
+    variants:
+      changed:
+        description: You're in the back part of the garden. A wooden kiosk is 
+          there, with benches all around; a statue stands in the middle and next
+          to it a staircase goes down in the ground. The garden ends with a 
+          cliff, that goes down directly in the ocean.
+  room-8:
+    name: Room 8
+    description: You're in front of the house on a path that leads north to a 
+      dark forest.
+    exits:
+      n: room-9
+      e: room-3
+  room-9:
+    name: Room 9
+    description: You're underground, below the garden. It's very dark in here 
+      and you can't see anything.
+    exits:
+      u: room-7
+    variants:
+      changed:
+        description: You're in a cave, underground, below the garden. You see a 
+          tunnel going east.
+  room-10:
+    name: Room 10
+    description: Room 10.
+    exits:
+      w: room-9
+      e: room-11
+  room-11:
+    name: Room 11
+    description: Room 11.
+    exits:
+      w: room-10
+interactions:
+  - id: room-3-key
+    verbs:
+      - use
+      - push
+    objects:
+      - key
+    when:
+      - room: room-3
+    effects:
+      - say: room_3_action
+      - set_flag: room-3_changed
+      - set_room_variant:
+          room: room-3
+          variant: changed
+      - set_exit:
+          room: room-3
+          direction: w
+          target: room-8
+    once: true
+  - id: room-7-statue
+    verbs:
+      - use
+      - push
+    objects:
+      - statue
+    when:
+      - room: room-7
+    effects:
+      - say: room_7_action
+      - set_flag: room-7_changed
+      - set_room_variant:
+          room: room-7
+          variant: changed
+      - set_exit:
+          room: room-7
+          direction: d
+          target: room-9
+    once: true
+  - id: room-9-flashlight
+    verbs:
+      - use
+      - push
+    objects:
+      - flashlight
+    when:
+      - room: room-9
+    effects:
+      - say: room_9_action
+      - set_flag: room-9_changed
+      - set_room_variant:
+          room: room-9
+          variant: changed
+      - set_exit:
+          room: room-9
+          direction: e
+          target: room-10
+    once: true

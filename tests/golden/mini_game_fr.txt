@@ -1,0 +1,51 @@
+Bienvenue dans La Lampe Oubliée.
+Chambre
+Vous êtes dans une chambre poussiéreuse. Un lit défait occupe le centre.
+Une lampe torche traîne sur la table de nuit. La sortie est au nord.
+
+Vous voyez : lampe torche
+Sorties : nord
+> regarder
+Chambre
+Vous êtes dans une chambre poussiéreuse. Un lit défait occupe le centre.
+Une lampe torche traîne sur la table de nuit. La sortie est au nord.
+
+Vous voyez : lampe torche
+Sorties : nord
+> prendre lampe
+Vous prenez lampe torche.
+> nord
+Couloir
+Un couloir étroit et sombre. Une faible lueur vient du nord.
+La chambre est au sud.
+
+Sorties : sud, nord
+> nord
+Grotte
+Une grotte humide. L'obscurité est presque totale.
+Un passage descend vers le sud.
+
+Sorties : sud
+> est
+La porte de fer est verrouillée.
+> utiliser lampe
+Vous allumez la lampe. La grotte s'éclaire et révèle une porte de fer à l'est.
+> examiner lampe
+lampe torche
+La lampe est allumée.
+> est
+Salle au trésor
+Une petite salle voûtée. Des coffres ouverts débordent de pièces d'or.
+Une clé en fer repose sur un socle.
+
+Vous voyez : clé en fer
+Sorties : ouest
+> prendre cle
+Vous prenez clé en fer.
+> utiliser cle
+La clé tourne dans la serrure. La porte s'ouvre sur une salle remplie de trésors.
+Évasion
+Vous ressortez de la caverne, la clé et le trésor en main.
+La lumière du jour vous accueille.
+
+Fin de la partie.

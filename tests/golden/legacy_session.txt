@@ -1,0 +1,17 @@
+Welcome to PyVenture.
+
+You're in the back part of the garden. A wooden kiosk is there, with benches all around; a statue stands in the middle. The garden ends with a cliff, that goes down directly in the ocean.
+
+Possible exits are 'w'
+What now? You're in the back part of the garden. A wooden kiosk is there, with benches all around; a statue stands in the middle. The garden ends with a cliff, that goes down directly in the ocean.
+
+Possible exits are 'w'
+What now? As you push the statue, you hear a click. As the ground starts to shake, you jump quickly out of the kiosk and a see a wooden panel opening in the ground, revealing a staircase.
+Possible exits are 'w', 'd'
+What now? You're underground, below the garden. It's very dark in here and you can't see anything.
+
+Possible exits are 'u'
+What now? You're underground, below the garden. It's very dark in here and you can't see anything.
+
+Possible exits are 'u'
+What now?
