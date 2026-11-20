@@ -196,3 +196,92 @@ def test_room_form_edit_updates_document(window: EditorWindow) -> None:
     window._on_form_change()
     assert document.section("rooms")["bedroom"]["art"] == "rooms/bedroom.png"
     assert isinstance(window.tree, ttk.Treeview)
+
+
+def test_duplicate_room(window: EditorWindow) -> None:
+    before = len(window.document.section("rooms"))
+    window.selection = ("rooms", "bedroom")
+    window.duplicate_selected()
+    rooms = window.document.section("rooms")
+    assert len(rooms) == before + 1
+    assert "bedroom-copy" in rooms
+    assert window.selection == ("rooms", "bedroom-copy")
+
+
+def test_duplicate_object(window: EditorWindow) -> None:
+    window.selection = ("objects", "flashlight")
+    window.duplicate_selected()
+    assert "flashlight-copy" in window.document.section("objects")
+
+
+def test_duplicate_interaction(window: EditorWindow) -> None:
+    window.selection = ("interactions", 0)
+    window.duplicate_selected()
+    interactions = window.document.section("interactions")
+    assert len(interactions) == 3
+    assert interactions[-1]["id"] == "light-cave-copy"
+
+
+def test_duplicate_twice_gives_unique_ids(window: EditorWindow) -> None:
+    window.selection = ("rooms", "bedroom")
+    window.duplicate_selected()
+    window.selection = ("rooms", "bedroom")
+    window.duplicate_selected()
+    rooms = window.document.section("rooms")
+    assert "bedroom-copy" in rooms
+    assert "bedroom-copy-2" in rooms
+
+
+def test_duplicate_undo(window: EditorWindow) -> None:
+    window.selection = ("rooms", "bedroom")
+    window.duplicate_selected()
+    count = len(window.document.section("rooms"))
+    window.undo()
+    assert len(window.document.section("rooms")) == count - 1
+
+
+def test_navigate_validation_selects_element(window: EditorWindow) -> None:
+    window.document.section("rooms")["bedroom"]["exits"]["n"] = "ghost"
+    window.validate_now()
+    entries = list(window.validation_list.get(0, "end"))
+    index = next(position for position, entry in enumerate(entries) if "bedroom" in entry)
+    window.validation_list.selection_clear(0, "end")
+    window.validation_list.selection_set(index)
+    window._navigate_validation()
+    assert window.selection == ("rooms", "bedroom")
+
+
+def test_iid_for_problem_points_to_interaction(window: EditorWindow) -> None:
+    window.document.section("interactions")[0]["objects"] = ["ghost"]
+    window.validate_now()
+    entries = list(window.validation_list.get(0, "end"))
+    problem = next(entry for entry in entries if "ghost" in entry)
+    assert window._iid_for_problem(problem) == "interaction:0"
+
+
+def test_external_change_reloads_when_clean(
+    window: EditorWindow, tmp_path: Path, monkeypatch
+) -> None:
+    import os
+
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "cfg"))
+    target = tmp_path / "game.yaml"
+    window.document.section("flags")["ext"] = True
+    window._save_to(target)
+    assert window.document.section("flags")["ext"] is True
+
+    target.write_text(
+        target.read_text(encoding="utf-8").replace("ext: true", "ext: false"), encoding="utf-8"
+    )
+    stamp = target.stat().st_mtime + 10
+    os.utime(target, (stamp, stamp))
+
+    window._check_external_change()
+    assert window.document.section("flags")["ext"] is False
+
+
+def test_recent_menu_populated(window: EditorWindow, tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "cfg"))
+    window._refresh_recent_menu()
+    assert window.recent_menu.index("end") is not None
+    assert window.recent_menu.index("end") >= 0

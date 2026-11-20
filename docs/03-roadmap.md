@@ -141,7 +141,7 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 - [x] `ProjectDocument` + pile d'undo/redo maison
 - [x] Ouvrir/créer/sauvegarder un projet
 - [x] Autosave et backups (`.pyventure/`)
-- [ ] Projets récents
+- [x] Projets récents
 - [x] Arbre de projet
 - [x] Barre d'état et panneau de validation
 
@@ -157,17 +157,17 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 ### 3.3 Confort
 
 - [x] Aperçu du jeu (lancement du jeu pygame en sous-processus)
-- [ ] Hot reload à la sauvegarde
+- [x] Hot reload à la sauvegarde (l'aperçu redémarre, détection des modifications externes)
 - [x] Validation en continu (panneau dédié)
-- [ ] Navigation vers l'élément fautif depuis la validation
+- [x] Navigation vers l'élément fautif depuis la validation
 - [x] Création d'un projet guidée (identifiant, titre, langues)
 - [x] Undo/redo et indicateur de modifications
-- [ ] Duplication de pièce/objet/interaction
+- [x] Duplication de pièce/objet/interaction
 - [x] Renommage d'ID avec mise à jour des références
 
 **Critère de sortie :** créer un petit jeu de 3 pièces, 2 objets et 2 interactions entièrement dans l'éditeur, le valider et y jouer.
 
-**État :** terminée. L'éditeur Tkinter permet de créer, éditer, valider et lancer un projet. Restent les projets récents, le hot reload, la navigation d'erreur et la duplication.
+**État :** terminée. L'éditeur Tkinter permet de créer, éditer, dupliquer, renommer, valider et lancer un projet, avec projets récents et hot reload.
 
 **Effort indicatif :** 7 à 10 jours.
 

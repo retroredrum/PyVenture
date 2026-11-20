@@ -14,8 +14,10 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 - `ProjectDocument` : chargement/sauvegarde round-trip (commentaires préservés), undo/redo, validation, renommage d'ID avec mise à jour des références.
 - Autosave et backups dans `.pyventure/`, indicateur de modifications, création de projet guidée.
 - Onglet YAML synchronisé avec application contrôlée, panneau de validation, bouton « Jouer » (sous-processus pygame).
+- Projets récents (menu Fichier), détection des modifications externes et hot reload de l'aperçu à la sauvegarde.
+- Navigation depuis un problème de validation vers l'élément concerné, duplication de pièce/objet/interaction.
 - `python3 -m pyventure editor` et option de projet.
-- Tests : 31 (document sans Tk + interface Tkinter sous Xvfb).
+- Tests : 43 (document et préférences sans Tk + interface Tkinter sous Xvfb).
 
 ### Ajouté — Phase 2 (fenêtre pygame)
 

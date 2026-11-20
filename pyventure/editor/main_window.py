@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import io
 import subprocess
 import sys
@@ -14,7 +15,7 @@ from typing import Any
 from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from ..core.errors import ProjectError
-from . import forms
+from . import forms, settings
 from .document import ProjectDocument, make_yaml
 
 TREE_SECTIONS = [
@@ -35,6 +36,8 @@ class EditorWindow:
         self.root = root
         self.document = document or ProjectDocument.new()
         self.selection: tuple[str, Any] | None = None
+        self._preview: subprocess.Popen | None = None
+        self._disk_mtime: float | None = None
 
         root.title("PyVenture — éditeur")
         root.geometry("1100x760")
@@ -45,6 +48,9 @@ class EditorWindow:
         self._build_body()
         self._build_status()
         self.refresh_all()
+        self._refresh_recent_menu()
+        self._remember_current()
+        self._disk_mtime = self._current_mtime()
 
         root.bind("<Control-n>", lambda _event: self.new_project())
         root.bind("<Control-o>", lambda _event: self.open_project())
@@ -52,9 +58,12 @@ class EditorWindow:
         root.bind("<Control-Shift-S>", lambda _event: self.save_project_as())
         root.bind("<Control-z>", lambda _event: self.undo())
         root.bind("<Control-y>", lambda _event: self.redo())
+        root.bind("<Control-d>", lambda _event: self.duplicate_selected())
+        root.bind("<F5>", lambda _event: self.play())
 
         self._autosave_job: str | None = None
         self._schedule_autosave()
+        self._schedule_watch()
 
     # -- Construction ---------------------------------------------------
     def _build_menu(self) -> None:
@@ -63,6 +72,8 @@ class EditorWindow:
         file_menu = tk.Menu(menubar, tearoff=False)
         file_menu.add_command(label="Nouveau projet…", command=self.new_project)
         file_menu.add_command(label="Ouvrir…", command=self.open_project)
+        self.recent_menu = tk.Menu(file_menu, tearoff=False)
+        file_menu.add_cascade(label="Ouvrir un projet récent", menu=self.recent_menu)
         file_menu.add_command(label="Enregistrer", command=self.save_project)
         file_menu.add_command(label="Enregistrer sous…", command=self.save_project_as)
         file_menu.add_separator()
@@ -72,6 +83,7 @@ class EditorWindow:
         edit_menu = tk.Menu(menubar, tearoff=False)
         edit_menu.add_command(label="Annuler", command=self.undo)
         edit_menu.add_command(label="Rétablir", command=self.redo)
+        edit_menu.add_command(label="Dupliquer", command=self.duplicate_selected)
         menubar.add_cascade(label="Édition", menu=edit_menu)
 
         project_menu = tk.Menu(menubar, tearoff=False)
@@ -95,6 +107,7 @@ class EditorWindow:
             ("Nouvelle interaction", self.add_interaction),
             ("Nouveau message", self.add_message),
             ("Nouvelle fin", self.add_ending),
+            ("Dupliquer", self.duplicate_selected),
             ("Supprimer", self.delete_selected),
         ]
         for text, command in buttons:
@@ -147,9 +160,16 @@ class EditorWindow:
         )
         self.validation_list.configure(yscrollcommand=val_scroll.set)
         val_scroll.grid(row=0, column=1, sticky="ns")
+        self.validation_list.bind("<Double-Button-1>", lambda _event: self._navigate_validation())
+        self.validation_list.bind("<Return>", lambda _event: self._navigate_validation())
         ttk.Button(validation_tab, text="Valider", command=self.validate_now).grid(
             row=1, column=0, sticky="w", padx=4, pady=4
         )
+        ttk.Label(
+            validation_tab,
+            text="Double-cliquez sur un problème pour ouvrir l'élément concerné.",
+            foreground="#666",
+        ).grid(row=2, column=0, sticky="w", padx=4)
         self.notebook.add(validation_tab, text="Validation")
 
         paned.add(right, weight=3)
@@ -332,6 +352,8 @@ class EditorWindow:
             return
         self.selection = None
         self.refresh_all()
+        self._remember_current()
+        self._disk_mtime = self._current_mtime()
 
     def save_project(self) -> None:
         if self.document.path is None:
@@ -354,7 +376,71 @@ class EditorWindow:
             messagebox.showerror("Erreur", str(exc))
             return
         self._backup(path)
+        self._remember_current()
+        self._disk_mtime = self._current_mtime()
         self.refresh_all()
+        self._reload_preview()
+
+    # -- Projets récents -------------------------------------------------
+    def _remember_current(self) -> None:
+        if self.document.path is None:
+            return
+        settings.remember_project(self.document.path)
+        self._refresh_recent_menu()
+
+    def _refresh_recent_menu(self) -> None:
+        if not hasattr(self, "recent_menu"):
+            return
+        self.recent_menu.delete(0, "end")
+        recent = settings.recent_projects()
+        if not recent:
+            self.recent_menu.add_command(label="(aucun)", state="disabled")
+            return
+        for entry in recent:
+            self.recent_menu.add_command(
+                label=Path(entry).name + f"  —  {Path(entry).parent}",
+                command=lambda value=entry: self.load_path(Path(value)),
+            )
+        self.recent_menu.add_separator()
+        self.recent_menu.add_command(label="Effacer la liste", command=self._clear_recent)
+
+    def _clear_recent(self) -> None:
+        data = settings.load_settings()
+        data["recent"] = []
+        settings.save_settings(data)
+        self._refresh_recent_menu()
+
+    # -- Hot reload ------------------------------------------------------
+    def _current_mtime(self) -> float | None:
+        path = self.document.path
+        if path is None or not path.is_file():
+            return None
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return None
+
+    def _schedule_watch(self) -> None:
+        self._watch_job = self.root.after(2000, self._check_external_change)
+
+    def _check_external_change(self) -> None:
+        try:
+            current = self._current_mtime()
+            if (
+                current is not None
+                and self._disk_mtime is not None
+                and current != self._disk_mtime
+                and not self.document.dirty
+            ):
+                self.load_path(self.document.path)
+        finally:
+            self._schedule_watch()
+
+    def _reload_preview(self) -> None:
+        if self._preview is not None and self._preview.poll() is None:
+            self._preview.terminate()
+            self._preview = None
+            self.play()
 
     def _backup(self, path: Path) -> None:
         backups = path.parent / ".pyventure" / "backups"
@@ -391,6 +477,42 @@ class EditorWindow:
             self.validation_list.insert("end", problem)
         return None
 
+    def _navigate_validation(self) -> None:
+        selection = self.validation_list.curselection()
+        if not selection:
+            return
+        problem = self.validation_list.get(selection[0])
+        iid = self._iid_for_problem(problem)
+        if iid is not None and self.tree.exists(iid):
+            self.tree.selection_set(iid)
+            self.tree.see(iid)
+            self._on_tree_select()
+
+    def _iid_for_problem(self, problem: str) -> str | None:
+        candidates: list[tuple[int, str]] = []
+        for section in ("rooms", "objects", "messages", "endings"):
+            mapping = self.document.section(section)
+            if not isinstance(mapping, dict):
+                continue
+            for item_id in mapping:
+                position = problem.find(str(item_id))
+                if position >= 0:
+                    candidates.append((position, f"{section}:{item_id}"))
+        interactions = self.document.section("interactions")
+        if isinstance(interactions, list):
+            for index, interaction in enumerate(interactions):
+                if not isinstance(interaction, dict):
+                    continue
+                interaction_id = str(interaction.get("id", ""))
+                if interaction_id:
+                    position = problem.find(interaction_id)
+                    if position >= 0:
+                        candidates.append((position, f"interaction:{index}"))
+        if not candidates:
+            return None
+        candidates.sort()
+        return candidates[0][1]
+
     def apply_yaml(self) -> None:
         text = self.yaml_text.get("1.0", "end-1c")
         try:
@@ -419,7 +541,7 @@ class EditorWindow:
                 messagebox.showerror("Erreur", str(exc))
                 return
         try:
-            subprocess.Popen(
+            self._preview = subprocess.Popen(
                 [
                     sys.executable,
                     "-m",
@@ -496,6 +618,59 @@ class EditorWindow:
         self.selection = ("interactions", len(interactions) - 1)
         self.refresh_all()
         self._build_form()
+
+    def duplicate_selected(self) -> None:
+        if self.selection is None:
+            return
+        kind, value = self.selection
+        if kind == "interactions":
+            interactions = self.document.section("interactions")
+            if not (0 <= value < len(interactions)):
+                return
+            duplicate = copy.deepcopy(interactions[value])
+            if isinstance(duplicate, dict):
+                base = str(duplicate.get("id", "interaction"))
+                duplicate["id"] = self._unique_interaction_id(base)
+            self.document.snapshot()
+            interactions.append(duplicate)
+            self.document.touch()
+            self.selection = ("interactions", len(interactions) - 1)
+        elif kind in {"rooms", "objects", "messages", "endings"}:
+            section = self.document.section(kind)
+            if value not in section:
+                return
+            duplicate = copy.deepcopy(section[value])
+            new_id = self._unique_id(section, str(value))
+            self.document.snapshot()
+            section[new_id] = duplicate
+            self.document.touch()
+            self.selection = (kind, new_id)
+        else:
+            return
+        self.refresh_all()
+        self._build_form()
+
+    @staticmethod
+    def _unique_id(mapping: Any, base: str) -> str:
+        candidate = f"{base}-copy"
+        index = 1
+        while candidate in mapping:
+            index += 1
+            candidate = f"{base}-copy-{index}"
+        return candidate
+
+    def _unique_interaction_id(self, base: str) -> str:
+        existing = {
+            str(interaction.get("id"))
+            for interaction in self.document.section("interactions")
+            if isinstance(interaction, dict)
+        }
+        candidate = f"{base}-copy"
+        index = 1
+        while candidate in existing:
+            index += 1
+            candidate = f"{base}-copy-{index}"
+        return candidate
 
     def delete_selected(self) -> None:
         if self.selection is None:
