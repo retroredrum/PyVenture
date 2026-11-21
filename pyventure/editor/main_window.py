@@ -19,6 +19,7 @@ from . import forms, settings
 from .assets_tab import AssetsTab
 from .document import ProjectDocument, make_yaml
 from .map_view import MapView
+from .translation_tab import TranslationTab
 
 TREE_SECTIONS = [
     ("meta", "Projet"),
@@ -193,6 +194,14 @@ class EditorWindow:
         self.assets_tab = AssetsTab(self.notebook, self.document, on_change=self._on_form_change)
         self.notebook.add(self.assets_tab, text="Assets")
 
+        self.translation_tab = TranslationTab(
+            self.notebook,
+            self.document,
+            on_change=self._on_translation_change,
+            on_play=self._play_in_language,
+        )
+        self.notebook.add(self.translation_tab, text="Traductions")
+
         paned.add(right, weight=3)
 
     def _build_status(self) -> None:
@@ -211,6 +220,16 @@ class EditorWindow:
         self.assets_tab.document = self.document
         self.map_view.reload()
         self.assets_tab.reload()
+        self.translation_tab.document = self.document
+        self.translation_tab.reload()
+
+    def _on_translation_change(self) -> None:
+        self._refresh_yaml()
+        self._refresh_title()
+        self._refresh_status()
+
+    def _play_in_language(self, language: str) -> None:
+        self.play(language)
 
     def _on_map_change(self) -> None:
         current_tab = self.notebook.select()
@@ -578,7 +597,7 @@ class EditorWindow:
         self.refresh_all()
         self._build_form()
 
-    def play(self) -> None:
+    def play(self, language: str | None = None) -> None:
         path = self.document.path
         if path is None or self.document.dirty:
             tmp = Path(self.document.root) / ".pyventure" / "preview.yaml"
@@ -588,20 +607,21 @@ class EditorWindow:
             except ProjectError as exc:
                 messagebox.showerror("Erreur", str(exc))
                 return
+        command = [
+            sys.executable,
+            "-m",
+            "pyventure",
+            "play",
+            "--gui",
+            "-p",
+            str(path),
+            "--fresh",
+            "--no-autosave",
+        ]
+        if language:
+            command += ["--lang", language]
         try:
-            self._preview = subprocess.Popen(
-                [
-                    sys.executable,
-                    "-m",
-                    "pyventure",
-                    "play",
-                    "--gui",
-                    "-p",
-                    str(path),
-                    "--fresh",
-                    "--no-autosave",
-                ]
-            )
+            self._preview = subprocess.Popen(command)
         except OSError as exc:
             messagebox.showerror("Erreur", f"Impossible de lancer le jeu : {exc}")
 

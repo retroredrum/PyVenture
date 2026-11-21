@@ -197,20 +197,23 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 
 ---
 
-## Phase 5 — Workflow de traduction
+## Phase 5 — Workflow de traduction (terminée)
 
 **Objectif :** ajouter une langue sans toucher au code.
 
-- [ ] Vue tableau : clés × langues
-- [ ] Filtres « manquant », « à relire », recherche
-- [ ] Édition côte à côte
-- [ ] Import/export CSV
-- [ ] Rapport de couverture par langue
-- [ ] Mode pseudo-locale pour tester les débordements
-- [ ] Vérification des placeholders
-- [ ] Aperçu du jeu dans la langue cible
+- [x] Vue tableau : clés × langues
+- [x] Filtres « manquants » et « placeholders », recherche
+- [ ] Marqueur « à relire »
+- [x] Édition côte à côte
+- [x] Import/export CSV
+- [x] Rapport de couverture par langue
+- [x] Mode pseudo-locale pour tester les débordements
+- [x] Vérification des placeholders
+- [x] Aperçu de la pièce de départ et jeu dans la langue cible
 
 **Critère de sortie :** ajouter une troisième langue complète via l'éditeur et y jouer.
+
+**État :** terminée. Onglet Traductions : tableau clés × langues, filtres, édition côte à côte, pseudo-locale, problèmes de placeholders, couverture, import/export CSV, aperçu et lancement du jeu par langue.
 
 **Effort indicatif :** 3 à 4 jours.
 

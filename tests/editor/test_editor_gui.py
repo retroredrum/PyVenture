@@ -318,3 +318,72 @@ def test_map_deletion_keeps_map_tab(window: EditorWindow) -> None:
     window.notebook.select(window.map_view)
     window.map_view._clear_exits("corridor")
     assert window.notebook.select() == str(window.map_view)
+
+
+def test_window_has_translation_tab(window: EditorWindow) -> None:
+    tabs = [window.notebook.tab(index, "text") for index in range(window.notebook.index("end"))]
+    assert "Traductions" in tabs
+
+
+def test_translation_tab_populates(window: EditorWindow) -> None:
+    window.translation_tab.reload()
+    assert window.translation_tab.tree.get_children()
+
+
+def test_translation_commit_updates_document(window: EditorWindow) -> None:
+    tab = window.translation_tab
+    tab.reload()
+    tab.tree.selection_set("rooms.bedroom.name")
+    tab._on_select()
+    editor = tab._editors["en"]
+    editor.delete("1.0", "end")
+    editor.insert("1.0", "The Bedroom")
+    tab._commit("en")
+    assert window.document.section("rooms")["bedroom"]["name"]["en"] == "The Bedroom"
+
+
+def test_translation_filter_missing(window: EditorWindow) -> None:
+    window.document.section("rooms")["bedroom"]["description"] = {"fr": "seulement"}
+    tab = window.translation_tab
+    tab.reload()
+    tab.filter_var.set("Manquants")
+    tab._populate()
+    assert "rooms.bedroom.description" in tab.tree.get_children()
+
+
+def test_translation_search_filter(window: EditorWindow) -> None:
+    tab = window.translation_tab
+    tab.reload()
+    tab.search_var.set("flashlight")
+    tab._populate()
+    keys = tab.tree.get_children()
+    assert keys
+    assert "objects.flashlight.name" in keys
+
+
+def test_translation_pseudo_column_toggle(window: EditorWindow) -> None:
+    tab = window.translation_tab
+    tab.reload()
+    assert "pseudo" not in tab.tree.cget("displaycolumns")
+    tab.pseudo_var.set(True)
+    tab._apply_display_columns()
+    assert "pseudo" in tab.tree.cget("displaycolumns")
+
+
+def test_translation_change_keeps_tab(window: EditorWindow) -> None:
+    window.notebook.select(window.translation_tab)
+    window._on_translation_change()
+    assert window.notebook.select() == str(window.translation_tab)
+
+
+def test_translation_edit_is_undoable(window: EditorWindow) -> None:
+    tab = window.translation_tab
+    tab.reload()
+    tab.tree.selection_set("rooms.bedroom.name")
+    tab._on_select()
+    editor = tab._editors["en"]
+    editor.delete("1.0", "end")
+    editor.insert("1.0", "Changed")
+    tab._commit("en")
+    window.undo()
+    assert window.document.section("rooms")["bedroom"]["name"]["en"] == "Bedroom"

@@ -71,6 +71,10 @@ Onglet **Carte** : nœuds de pièces déplaçables, flèches de sorties colorée
 
 Onglet **Assets** : statut de chaque illustration (manquante, dimensions incorrectes), aperçu, import/remplacement, génération de placeholders et rapport des fichiers inutilisés.
 
+Onglet **Traductions** : tableau clés × langues, filtres « manquants » / « placeholders » et recherche, édition côte à côte par langue, pseudo-locale pour tester les débordements, vérification des placeholders, couverture par langue, import/export CSV, aperçu de la pièce de départ et lancement du jeu dans la langue choisie.
+
+![Onglet Traductions : tableau, édition côte à côte et pseudo-locale.](docs/images/editor-translation.png)
+
 ## Objectifs
 
 1. **Conserver le jeu texte** : parser, descriptions, énigmes, mode terminal.

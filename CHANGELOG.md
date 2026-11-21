@@ -7,6 +7,13 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Ajouté — Phase 5 (workflow de traduction)
+
+- `pyventure/editor/translation.py` : inventaire des textes localisés, couverture par langue, détection des placeholders et des traductions manquantes, sérialisation CSV et pseudo-locale.
+- Onglet **Traductions** : tableau clés × langues, filtres (tous / manquants / placeholders) et recherche, édition côte à côte par langue, colonne pseudo-locale, liste des problèmes de placeholders et couverture en pied de panneau.
+- Import et export CSV, aperçu de la pièce de départ par langue, lancement du jeu dans la langue choisie.
+- Tests : 22 de plus (logique de traduction sans Tk, onglet sous Xvfb).
+
 ### Ajouté — Phase 4 (vue carte et assets)
 
 - Onglet **Carte** : `tk.Canvas` avec nœuds de pièces, déplacement des nœuds et positions sauvegardées dans `.pyventure/map.yaml`.

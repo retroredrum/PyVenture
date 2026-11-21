@@ -123,12 +123,13 @@ Une seule fois : [x]   Priorité : [0]
 
 ### 4.6 Vue traduction
 
-- Tableau : clé, type (pièce/objet/message/UI), colonnes par langue.
-- Filtres : manquant, à relire, recherche.
-- Édition inline, copie d'une langue à l'autre.
-- Import/export CSV.
-- Compteur de couverture.
-- Vérification des placeholders (`{object}` identiques dans toutes les langues).
+- Tableau : clé, type, source, pseudo-locale et une colonne par langue.
+- Filtres : tous, manquants, placeholders ; recherche libre.
+- Édition côte à côte : un champ par langue, plus un aperçu pseudo-localisé du texte source.
+- Liste des problèmes de placeholders (`{nom}` incohérents entre langues).
+- Couverture par langue affichée en pied de panneau.
+- Import/export CSV (clé, type, source, puis une colonne par langue).
+- Aperçu de la pièce de départ dans la langue choisie et lancement du jeu dans cette langue.
 
 ### 4.7 Assets
 
