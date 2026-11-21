@@ -99,7 +99,7 @@ rooms:
       en: |
         You are in a dusty bedroom. An unmade bed sits in the middle.
         A flashlight lies on the nightstand. The exit is to the north.
-    art: rooms/bedroom.png
+    art: art/rooms/bedroom.png
     exits:
       n: corridor
 
@@ -114,7 +114,7 @@ rooms:
       en: |
         A narrow, dark corridor. A faint glow comes from the north.
         The bedroom is to the south.
-    art: rooms/corridor.png
+    art: art/rooms/corridor.png
     exits:
       s: bedroom
       n: cave
@@ -130,7 +130,7 @@ rooms:
       en: |
         A damp cave. The darkness is almost total.
         A passage leads south.
-    art: rooms/cave.png
+    art: art/rooms/cave.png
     variants:
       lit:
         description:
@@ -140,7 +140,7 @@ rooms:
           en: |
             The lamp reveals moss-covered walls and a heavy iron door to the east.
             The passage south is still there.
-        art: rooms/cave_lit.png
+        art: art/rooms/cave_lit.png
     exits:
       s: corridor
       e:
@@ -161,7 +161,7 @@ rooms:
       en: |
         A small vaulted room. Open chests overflow with gold coins.
         An iron key rests on a pedestal.
-    art: rooms/vault.png
+    art: art/rooms/vault.png
     exits:
       w: cave
 
@@ -178,7 +178,7 @@ objects:
       en: A metal flashlight, still working.
     location: bedroom
     portable: true
-    art: objects/flashlight.png
+    art: art/objects/flashlight.png
     states:
       off:
         description:
@@ -202,7 +202,7 @@ objects:
       en: A heavy iron key, covered in rust.
     location: vault
     portable: true
-    art: objects/key.png
+    art: art/objects/key.png
 
 interactions:
   - id: light-cave
@@ -242,4 +242,4 @@ endings:
       en: |
         You emerge from the cave, key and treasure in hand.
         Daylight welcomes you.
-    art: endings/escaped.png
+    art: art/endings/escaped.png

@@ -293,3 +293,35 @@ class ProjectDocument:
                     value["room"] = new
                 if kind == "set_exit" and value.get("target") == old:
                     value["target"] = new
+
+    # -- Positions de la carte ------------------------------------------
+    def map_path(self) -> Path | None:
+        if self.path is None:
+            return None
+        return self.path.parent / ".pyventure" / "map.yaml"
+
+    def load_map_positions(self) -> dict[str, tuple[int, int]]:
+        path = self.map_path()
+        if path is None or not path.is_file():
+            return {}
+        try:
+            data = make_yaml().load(path) or {}
+        except Exception:  # noqa: BLE001 - positions facultatives
+            return {}
+        positions: dict[str, tuple[int, int]] = {}
+        if isinstance(data, dict):
+            for room_id, value in data.items():
+                if isinstance(value, (list, tuple)) and len(value) == 2:
+                    positions[str(room_id)] = (int(value[0]), int(value[1]))
+        return positions
+
+    def save_map_positions(self, positions: dict[str, tuple[int, int]]) -> None:
+        path = self.map_path()
+        if path is None:
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        data = CommentedMap()
+        for room_id, (x, y) in positions.items():
+            data[str(room_id)] = CommentedSeq([int(x), int(y)])
+        with path.open("w", encoding="utf-8") as handle:
+            make_yaml().dump(data, handle)

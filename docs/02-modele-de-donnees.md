@@ -163,7 +163,7 @@ rooms:
       en: |
         You are in a dusty bedroom.
         A flashlight lies on the nightstand.
-    art: rooms/bedroom.png
+    art: art/rooms/bedroom.png
     exits:
       n: corridor
     variants:
@@ -171,7 +171,7 @@ rooms:
         description:
           fr: Il fait noir.
           en: It is dark.
-        art: rooms/bedroom_dark.png
+        art: art/rooms/bedroom_dark.png
     on_enter:
       - say: bedroom_enter
 ```
@@ -234,7 +234,7 @@ objects:
       en: A metal flashlight, still working.
     location: bedroom
     portable: true
-    art: objects/flashlight.png
+    art: art/objects/flashlight.png
     states:
       off:
         description: {fr: La lampe est éteinte., en: The flashlight is off.}
@@ -355,7 +355,7 @@ endings:
         Vous ressortez de la caverne, le trésor en main.
       en: |
         You emerge from the cave, treasure in hand.
-    art: endings/escaped.png
+    art: art/endings/escaped.png
 ```
 
 Une fin est déclenchée par `end_game`. Le moteur affiche le titre et le texte, puis propose de recommencer ou de quitter.

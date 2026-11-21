@@ -7,6 +7,14 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Ajouté — Phase 4 (vue carte et assets)
+
+- Onglet **Carte** : `tk.Canvas` avec nœuds de pièces, déplacement des nœuds et positions sauvegardées dans `.pyventure/map.yaml`.
+- Flèches de sorties colorées (simple, conditionnelle, cachée, verrouillée), création d'une sortie par glisser-déposer depuis le point d'un nœud, sorties réciproques en un clic, auto-layout en largeur depuis la pièce de départ, miniatures d'art.
+- Onglet **Assets** : inventaire des illustrations, état (ok / manquant / dimensions incorrectes), aperçu, import/remplacement, génération de placeholders et rapport des fichiers inutilisés.
+- Chemins d'illustration unifiés en `art/...` (schéma, exemples et documentation).
+- Tests : 22 de plus (assets sans Tk, carte sous Xvfb, intégration à la fenêtre).
+
 ### Ajouté — Phase 3 (éditeur Tkinter)
 
 - `pyventure/editor/` : fenêtre Tkinter avec arbre de projet (pièces, objets, interactions, messages, fins, flags), formulaires par langue et onglets Formulaire / YAML / Validation.

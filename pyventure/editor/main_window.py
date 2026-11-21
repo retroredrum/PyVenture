@@ -16,7 +16,9 @@ from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from ..core.errors import ProjectError
 from . import forms, settings
+from .assets_tab import AssetsTab
 from .document import ProjectDocument, make_yaml
+from .map_view import MapView
 
 TREE_SECTIONS = [
     ("meta", "Projet"),
@@ -172,6 +174,17 @@ class EditorWindow:
         ).grid(row=2, column=0, sticky="w", padx=4)
         self.notebook.add(validation_tab, text="Validation")
 
+        self.map_view = MapView(
+            self.notebook,
+            self.document,
+            on_change=self._on_map_change,
+            on_open=self._open_room_from_map,
+        )
+        self.notebook.add(self.map_view, text="Carte")
+
+        self.assets_tab = AssetsTab(self.notebook, self.document, on_change=self._on_form_change)
+        self.notebook.add(self.assets_tab, text="Assets")
+
         paned.add(right, weight=3)
 
     def _build_status(self) -> None:
@@ -186,6 +199,26 @@ class EditorWindow:
         self._refresh_status()
         self._refresh_title()
         self._build_form()
+        self.map_view.document = self.document
+        self.assets_tab.document = self.document
+        self.map_view.reload()
+        self.assets_tab.reload()
+
+    def _on_map_change(self) -> None:
+        self._refresh_tree()
+        self._refresh_yaml()
+        self.validate_now()
+        self._refresh_title()
+        self._refresh_status()
+        self.assets_tab.reload()
+
+    def _open_room_from_map(self, room_id: str) -> None:
+        iid = f"rooms:{room_id}"
+        if self.tree.exists(iid):
+            self.tree.selection_set(iid)
+            self.tree.see(iid)
+            self._on_tree_select()
+            self.notebook.select(0)
 
     def _refresh_title(self) -> None:
         name = self.document.path.name if self.document.path else "(nouveau projet)"

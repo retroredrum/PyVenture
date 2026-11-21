@@ -35,7 +35,7 @@ L'éditeur est une **application séparée** (`pyventure-editor`), même si elle
 |   Grotte       | Description FR [..................]   |                  |
 | ▾ Objets       | Description EN [..................]   |                  |
 |   Lampe        | Sorties    [nord → Couloir] [+ Ajouter] |                |
-|   Clé          | Art        [rooms/bedroom.png] [Parcourir] |             |
+|   Clé          | Art        [art/rooms/bedroom.png] [Parcourir] |             |
 | ▾ Interactions |                                      |                  |
 | ▾ Messages     |                                      |                  |
 | ▾ Flags        |                                      |                  |

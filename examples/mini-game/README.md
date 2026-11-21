@@ -23,4 +23,4 @@ python start.py
 
 ## Art
 
-Les images référencées (`rooms/bedroom.png`, etc.) ne sont pas fournies : le moteur affichera des placeholders tant qu'elles n'existent pas. Voir [`art/README.md`](art/README.md).
+Les images référencées (`art/rooms/bedroom.png`, etc.) ne sont pas fournies : le moteur affichera des placeholders tant qu'elles n'existent pas. Voir [`art/README.md`](art/README.md).

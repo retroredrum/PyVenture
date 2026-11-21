@@ -285,3 +285,24 @@ def test_recent_menu_populated(window: EditorWindow, tmp_path: Path, monkeypatch
     window._refresh_recent_menu()
     assert window.recent_menu.index("end") is not None
     assert window.recent_menu.index("end") >= 0
+
+
+def test_window_has_map_and_assets_tabs(window: EditorWindow) -> None:
+    tabs = [window.notebook.tab(index, "text") for index in range(window.notebook.index("end"))]
+    assert "Carte" in tabs
+    assert "Assets" in tabs
+
+
+def test_open_room_from_map_selects_room(window: EditorWindow) -> None:
+    window._open_room_from_map("cave")
+    assert window.selection == ("rooms", "cave")
+
+
+def test_assets_tab_lists_references(window: EditorWindow) -> None:
+    window.assets_tab.reload()
+    assert window.assets_tab.tree.get_children()
+
+
+def test_map_tab_places_rooms(window: EditorWindow) -> None:
+    window.map_view.reload()
+    assert set(window.map_view.positions) == set(window.document.section("rooms"))

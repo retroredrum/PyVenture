@@ -173,22 +173,24 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 
 ---
 
-## Phase 4 — Vue carte et gestion des assets
+## Phase 4 — Vue carte et gestion des assets (terminée)
 
 **Objectif :** rendre l'édition spatiale et graphique confortable.
 
-- [ ] `tk.Canvas` avec nœuds de pièces
-- [ ] Déplacement des nœuds, sauvegarde des positions
-- [ ] Flèches de sorties, couleurs par type/condition
-- [ ] Création d'une sortie par glisser-déposer
-- [ ] Sortie réciproque en un clic
-- [ ] Auto-layout
-- [ ] Miniatures d'art dans les nœuds
-- [ ] Vue assets : lister, prévisualiser, importer, remplacer
-- [ ] Vérification dimensions/format, génération de placeholder
-- [ ] Rapport des assets manquants ou inutilisés
+- [x] `tk.Canvas` avec nœuds de pièces
+- [x] Déplacement des nœuds, sauvegarde des positions (`.pyventure/map.yaml`)
+- [x] Flèches de sorties, couleurs par type/condition
+- [x] Création d'une sortie par glisser-déposer
+- [x] Sortie réciproque en un clic
+- [x] Auto-layout
+- [x] Miniatures d'art dans les nœuds
+- [x] Vue assets : lister, prévisualiser, importer, remplacer
+- [x] Vérification dimensions/format, génération de placeholder
+- [x] Rapport des assets manquants ou inutilisés
 
 **Critère de sortie :** éditer la carte visuellement, importer une image et la voir dans le jeu.
+
+**État :** terminée. Onglet Carte (nœuds déplaçables, flèches colorées, glisser-déposer, auto-layout, miniatures) et onglet Assets (statut, aperçu, import, placeholders, fichiers inutilisés).
 
 **Effort indicatif :** 5 à 7 jours.
 

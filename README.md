@@ -11,7 +11,7 @@ Un moteur d'aventure texte à l'ancienne, dans l'esprit de Zork, avec des illust
 - ✅ **Nouveau moteur data-driven** : chargement YAML, parseur multilingue, interactions déclaratives, sauvegarde, mode terminal.
 - ✅ Projet d'exemple jouable en FR et EN (`examples/mini-game`).
 - ✅ **Fenêtre pygame** : art pixel art, transcript, inventaire, saisie, menu, thème clair/sombre, transitions.
-- ✅ **Éditeur Tkinter** : pièces, objets, interactions, messages, fins, validation, YAML, undo/redo, aperçu.
+- ✅ **Éditeur Tkinter** : pièces, objets, interactions, messages, fins, validation, YAML, undo/redo, duplication, vue carte, assets, aperçu.
 
 **Décisions clés** : pygame-ce pour le jeu (320×180), Tkinter/ttk pour l'éditeur, YAML + schéma JSON pour le contenu, FR/EN, Linux d'abord, licence MIT.
 
@@ -61,7 +61,13 @@ python3 -m pyventure editor examples/mini-game/game.yaml
 
 ![Éditeur : arbre du projet, formulaire de pièce, onglets Formulaire / YAML / Validation.](docs/images/editor.png)
 
-Il propose un arbre de projet, des formulaires par langue, un éditeur de sorties, un onglet YAML synchronisé, la validation en continu, undo/redo, autosave/backups et un bouton pour lancer le jeu.
+Il propose un arbre de projet, des formulaires par langue, un éditeur de sorties, un onglet YAML synchronisé, la validation en continu avec navigation, undo/redo, duplication, projets récents, hot reload et un bouton pour lancer le jeu.
+
+Onglet **Carte** : nœuds de pièces déplaçables, flèches de sorties colorées selon les conditions, création de sortie par glisser-déposer, sorties réciproques en un clic, auto-layout et miniatures d'art.
+
+![Vue carte : pièces reliées par leurs sorties.](docs/images/editor-map.png)
+
+Onglet **Assets** : statut de chaque illustration (manquante, dimensions incorrectes), aperçu, import/remplacement, génération de placeholders et rapport des fichiers inutilisés.
 
 ## Objectifs
 
