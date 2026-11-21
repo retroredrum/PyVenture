@@ -119,6 +119,7 @@ Une seule fois : [x]   Priorité : [0]
 - Auto-layout par proximité ou grille.
 - Positions sauvegardées dans `.pyventure/map.yaml` pour ne pas polluer le contenu.
 - Export du plan en PNG et PDF (titre, flèches colorées, légende, miniatures).
+- Clic sur une flèche pour la sélectionner (jaune) puis **Suppr** pour supprimer la sortie ; les modifications ne changent pas l'onglet actif.
 
 ### 4.6 Vue traduction
 

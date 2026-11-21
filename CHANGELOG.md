@@ -13,6 +13,8 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 - Flèches de sorties colorées (simple, conditionnelle, cachée, verrouillée), création d'une sortie par glisser-déposer depuis le point d'un nœud, sorties réciproques en un clic, auto-layout en largeur depuis la pièce de départ, miniatures d'art.
 - Onglet **Assets** : inventaire des illustrations, état (ok / manquant / dimensions incorrectes), aperçu, import/remplacement, génération de placeholders et rapport des fichiers inutilisés.
 - **Export du plan** en PNG et PDF (menu Fichier ou barre d'outils de la carte), avec titre, flèches colorées, légende et miniatures.
+- **Sélection d'une sortie** au clic sur sa flèche (elle devient jaune) puis suppression avec **Suppr** ou le bouton « Supprimer la sortie » ; suppression annulable.
+- Les modifications faites depuis la carte **ne changent plus l'onglet actif**.
 - Chemins d'illustration unifiés en `art/...` (schéma, exemples et documentation).
 - Tests : 22 de plus (assets sans Tk, carte sous Xvfb, intégration à la fenêtre).
 

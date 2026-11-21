@@ -306,3 +306,15 @@ def test_assets_tab_lists_references(window: EditorWindow) -> None:
 def test_map_tab_places_rooms(window: EditorWindow) -> None:
     window.map_view.reload()
     assert set(window.map_view.positions) == set(window.document.section("rooms"))
+
+
+def test_map_change_keeps_current_tab(window: EditorWindow) -> None:
+    window.notebook.select(window.map_view)
+    window._on_map_change()
+    assert window.notebook.select() == str(window.map_view)
+
+
+def test_map_deletion_keeps_map_tab(window: EditorWindow) -> None:
+    window.notebook.select(window.map_view)
+    window.map_view._clear_exits("corridor")
+    assert window.notebook.select() == str(window.map_view)

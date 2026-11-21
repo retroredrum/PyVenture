@@ -122,3 +122,63 @@ def test_export_to_png_and_pdf(view: MapView, tmp_path: Path) -> None:
     pdf = view.export_to(tmp_path / "plan.pdf")
     assert pdf is not None and pdf.is_file()
     assert pdf.read_bytes()[:4] == b"%PDF"
+
+
+def test_edge_hit_testing(view: MapView) -> None:
+    assert view._segments
+    source, direction, start, end = view._segments[0]
+    middle = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
+    found = view._edge_at(*middle)
+    assert found is not None
+    assert found in {segment[:2] for segment in view._segments}
+    assert view._edge_at(-10_000, -10_000) is None
+
+
+def test_select_and_delete_edge(view: MapView) -> None:
+    source, direction, start, end = view._segments[0]
+    middle = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
+    view._on_press(_press_event(view, middle))
+    assert view.selected_edge is not None
+    assert view.selected is None
+
+    source, direction = view.selected_edge
+    before = len(view.rooms()[source].get("exits") or {})
+    view.delete_selected_edge()
+    after = len(view.rooms()[source].get("exits") or {})
+    assert after == before - 1
+    assert view.selected_edge is None
+
+
+def test_delete_edge_is_undoable(view: MapView) -> None:
+    source, direction, _, _ = view._segments[0]
+    view.selected_edge = (source, direction)
+    view.delete_selected_edge()
+    assert view.document.undo() is True
+    assert direction in (view.rooms()[source].get("exits") or {})
+
+
+def test_press_on_node_selects_node_and_clears_edge(view: MapView) -> None:
+    view.selected_edge = view._segments[0][:2]
+    x, y, _, _ = view._rect("bedroom")
+    view._on_press(_press_event(view, (x + 5, y + 5)))
+    assert view.selected == "bedroom"
+    assert view.selected_edge is None
+
+
+def test_distance_to_segment() -> None:
+    from pyventure.editor.map_view import _distance_to_segment
+
+    assert _distance_to_segment(0, 5, 0, 0, 10, 0) == 5
+    assert _distance_to_segment(5, 0, 0, 0, 10, 0) == 0
+    assert _distance_to_segment(0, 0, 0, 0, 0, 0) == 0
+
+
+class _Event:
+    def __init__(self, x: int, y: int) -> None:
+        self.x = x
+        self.y = y
+
+
+def _press_event(view: MapView, point: tuple[int, int]) -> _Event:
+    """Construit un faux événement au bon endroit, en tenant compte du défilement."""
+    return _Event(int(view.canvas.canvasx(0) + point[0]), int(view.canvas.canvasy(0) + point[1]))

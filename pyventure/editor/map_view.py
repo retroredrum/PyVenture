@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import tkinter as tk
 from collections.abc import Callable
 from pathlib import Path
@@ -40,6 +41,8 @@ class MapView(ttk.Frame):
 
         self.positions: dict[str, tuple[int, int]] = {}
         self.selected: str | None = None
+        self.selected_edge: tuple[str, str] | None = None
+        self._segments: list[tuple[str, str, tuple[int, int], tuple[int, int]]] = []
         self._drag_room: str | None = None
         self._drag_offset = (0, 0)
         self._port_source: str | None = None
@@ -65,6 +68,9 @@ class MapView(ttk.Frame):
         self.canvas.bind("<Double-Button-1>", self._on_double_click)
         self.canvas.bind("<Button-3>", self._on_right_click)
         self.canvas.bind("<Configure>", lambda _event: self._draw())
+        self.canvas.configure(takefocus=True)
+        self.canvas.bind("<Delete>", lambda _event: self.delete_selected_edge())
+        self.canvas.bind("<BackSpace>", lambda _event: self.delete_selected_edge())
 
     def _build_toolbar(self) -> None:
         bar = ttk.Frame(self)
@@ -72,6 +78,7 @@ class MapView(ttk.Frame):
         buttons = [
             ("Auto-layout", self.auto_layout),
             ("Sorties réciproques", self.make_reciprocal),
+            ("Supprimer la sortie", self.delete_selected_edge),
             ("Ajuster", self.fit),
             ("Exporter PNG…", self.export_png),
             ("Exporter PDF…", self.export_pdf),
@@ -81,7 +88,10 @@ class MapView(ttk.Frame):
             ttk.Button(bar, text=text, command=command).pack(side="left", padx=2)
         ttk.Label(
             bar,
-            text="Glissez un nœud ; tirez depuis le point à droite pour créer une sortie.",
+            text=(
+                "Glissez un nœud ; tirez depuis le point à droite pour créer une sortie ; "
+                "cliquez une flèche puis Suppr pour la supprimer."
+            ),
             foreground="#666",
         ).pack(side="left", padx=8)
 
@@ -136,7 +146,14 @@ class MapView(ttk.Frame):
     # -- Dessin ----------------------------------------------------------
     def _draw(self) -> None:
         self.canvas.delete("all")
+        self._segments = []
         rooms = self.rooms()
+        if self.selected_edge is not None:
+            source, direction = self.selected_edge
+            room = rooms.get(source)
+            exits = room.get("exits") if isinstance(room, dict) else None
+            if not isinstance(exits, dict) or direction not in exits:
+                self.selected_edge = None
         for room_id, room in rooms.items():
             exits = room.get("exits") if isinstance(room, dict) else None
             if not isinstance(exits, dict):
@@ -171,9 +188,12 @@ class MapView(ttk.Frame):
         start = map_model.edge_point(self.positions[source], self.positions[target])
         end = map_model.edge_point(self.positions[target], self.positions[source])
         style = map_model.edge_style(value)
-        color = EDGE_COLORS[style]
-        dash = (6, 4) if style == "hidden" else None
-        self.canvas.create_line(*start, *end, fill=color, width=2, arrow=tk.LAST, dash=dash)
+        selected = self.selected_edge == (source, direction)
+        color = "#ffd24a" if selected else EDGE_COLORS[style]
+        width = 4 if selected else 2
+        dash = (6, 4) if style == "hidden" and not selected else None
+        self.canvas.create_line(*start, *end, fill=color, width=width, arrow=tk.LAST, dash=dash)
+        self._segments.append((source, direction, start, end))
         mid = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
         self.canvas.create_text(
             mid[0], mid[1] - 8, text=direction, fill=color, font=("TkDefaultFont", 8)
@@ -248,10 +268,22 @@ class MapView(ttk.Frame):
                 return room_id
         return None
 
+    def _edge_at(self, x: int, y: int, tolerance: int = 7) -> tuple[str, str] | None:
+        """Renvoie (pièce source, direction) de la flèche la plus proche du clic."""
+        best: tuple[str, str] | None = None
+        best_distance = float(tolerance)
+        for source, direction, start, end in self._segments:
+            distance = _distance_to_segment(x, y, *start, *end)
+            if distance <= best_distance:
+                best_distance = distance
+                best = (source, direction)
+        return best
+
     def _event_xy(self, event: tk.Event) -> tuple[int, int]:
         return self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
 
     def _on_press(self, event: tk.Event) -> None:
+        self.canvas.focus_set()
         x, y = self._event_xy(event)
         port = self._port_at(x, y)
         if port is not None:
@@ -261,14 +293,17 @@ class MapView(ttk.Frame):
             )
             return
         room_id = self._room_at(x, y)
-        if room_id is None:
-            self.selected = None
+        if room_id is not None:
+            self.selected = room_id
+            self.selected_edge = None
+            self._drag_room = room_id
+            rx, ry, _, _ = self._rect(room_id)
+            self._drag_offset = (x - rx, y - ry)
             self._draw()
             return
-        self.selected = room_id
-        self._drag_room = room_id
-        rx, ry, _, _ = self._rect(room_id)
-        self._drag_offset = (x - rx, y - ry)
+        edge = self._edge_at(x, y)
+        self.selected = None
+        self.selected_edge = edge
         self._draw()
 
     def _on_motion(self, event: tk.Event) -> None:
@@ -379,6 +414,26 @@ class MapView(ttk.Frame):
         self.on_change()
         self._draw()
 
+    def delete_selected_edge(self) -> None:
+        """Supprime la sortie sélectionnée (flèche jaune)."""
+        if self.selected_edge is None:
+            return
+        source, direction = self.selected_edge
+        room = self.rooms().get(source)
+        exits = room.get("exits") if isinstance(room, dict) else None
+        if not isinstance(exits, dict) or direction not in exits:
+            self.selected_edge = None
+            self._draw()
+            return
+        self.document.snapshot()
+        exits.pop(direction, None)
+        if not exits:
+            room.pop("exits", None)
+        self.document.touch()
+        self.selected_edge = None
+        self.on_change()
+        self._draw()
+
     # -- Export ----------------------------------------------------------
     def export_png(self) -> Path | None:
         return self._export("png")
@@ -404,3 +459,13 @@ class MapView(ttk.Frame):
         except Exception as exc:  # noqa: BLE001 - affiché à l'utilisateur
             messagebox.showerror("Erreur", f"Export impossible : {exc}")
             return None
+
+
+def _distance_to_segment(px: int, py: int, ax: int, ay: int, bx: int, by: int) -> float:
+    """Distance d'un point à un segment."""
+    dx, dy = bx - ax, by - ay
+    if dx == 0 and dy == 0:
+        return math.hypot(px - ax, py - ay)
+    t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)
+    t = max(0.0, min(1.0, t))
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))

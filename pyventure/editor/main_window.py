@@ -38,6 +38,7 @@ class EditorWindow:
         self.root = root
         self.document = document or ProjectDocument.new()
         self.selection: tuple[str, Any] | None = None
+        self._suppress_select = False
         self._preview: subprocess.Popen | None = None
         self._disk_mtime: float | None = None
 
@@ -212,12 +213,15 @@ class EditorWindow:
         self.assets_tab.reload()
 
     def _on_map_change(self) -> None:
+        current_tab = self.notebook.select()
         self._refresh_tree()
         self._refresh_yaml()
         self.validate_now()
         self._refresh_title()
         self._refresh_status()
         self.assets_tab.reload()
+        if current_tab:
+            self.notebook.select(current_tab)
 
     def _open_room_from_map(self, room_id: str) -> None:
         iid = f"rooms:{room_id}"
@@ -239,30 +243,32 @@ class EditorWindow:
         self.status.configure(text=f"{path}   |   annuler : {undo}   |   rétablir : {redo}")
 
     def _refresh_tree(self) -> None:
-        self.tree.delete(*self.tree.get_children())
-        for key, label in TREE_SECTIONS:
-            node = self.tree.insert("", "end", iid=f"cat:{key}", text=label, open=True)
-            if key == "meta":
-                continue
-            if key == "flags":
-                continue
-            if key == "interactions":
-                for index, interaction in enumerate(self.document.section("interactions")):
-                    name = (
-                        str(interaction.get("id", f"#{index}"))
-                        if isinstance(interaction, dict)
-                        else f"#{index}"
-                    )
-                    self.tree.insert(node, "end", iid=f"interaction:{index}", text=name)
-                continue
-            section = self.document.section(key)
-            if isinstance(section, dict):
-                for item_id in section:
-                    self.tree.insert(node, "end", iid=f"{key}:{item_id}", text=str(item_id))
-        if self.selection is not None:
-            iid = self._iid_for(self.selection)
-            if iid and self.tree.exists(iid):
-                self.tree.selection_set(iid)
+        self._suppress_select = True
+        try:
+            self.tree.delete(*self.tree.get_children())
+            for key, label in TREE_SECTIONS:
+                node = self.tree.insert("", "end", iid=f"cat:{key}", text=label, open=True)
+                if key in {"meta", "flags"}:
+                    continue
+                if key == "interactions":
+                    for index, interaction in enumerate(self.document.section("interactions")):
+                        name = (
+                            str(interaction.get("id", f"#{index}"))
+                            if isinstance(interaction, dict)
+                            else f"#{index}"
+                        )
+                        self.tree.insert(node, "end", iid=f"interaction:{index}", text=name)
+                    continue
+                section = self.document.section(key)
+                if isinstance(section, dict):
+                    for item_id in section:
+                        self.tree.insert(node, "end", iid=f"{key}:{item_id}", text=str(item_id))
+            if self.selection is not None:
+                iid = self._iid_for(self.selection)
+                if iid and self.tree.exists(iid):
+                    self.tree.selection_set(iid)
+        finally:
+            self._suppress_select = False
 
     def _iid_for(self, selection: tuple[str, Any]) -> str | None:
         kind, value = selection
@@ -329,6 +335,8 @@ class EditorWindow:
         self._refresh_status()
 
     def _on_tree_select(self) -> None:
+        if self._suppress_select:
+            return
         selection = self.tree.selection()
         if not selection:
             return
