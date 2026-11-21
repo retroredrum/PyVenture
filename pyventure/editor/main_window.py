@@ -79,6 +79,13 @@ class EditorWindow:
         file_menu.add_command(label="Enregistrer", command=self.save_project)
         file_menu.add_command(label="Enregistrer sous…", command=self.save_project_as)
         file_menu.add_separator()
+        file_menu.add_command(
+            label="Exporter le plan (PNG)…", command=lambda: self.map_view.export_png()
+        )
+        file_menu.add_command(
+            label="Exporter le plan (PDF)…", command=lambda: self.map_view.export_pdf()
+        )
+        file_menu.add_separator()
         file_menu.add_command(label="Quitter", command=self.root.destroy)
         menubar.add_cascade(label="Fichier", menu=file_menu)
 

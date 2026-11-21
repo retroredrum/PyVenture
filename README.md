@@ -63,9 +63,11 @@ python3 -m pyventure editor examples/mini-game/game.yaml
 
 Il propose un arbre de projet, des formulaires par langue, un éditeur de sorties, un onglet YAML synchronisé, la validation en continu avec navigation, undo/redo, duplication, projets récents, hot reload et un bouton pour lancer le jeu.
 
-Onglet **Carte** : nœuds de pièces déplaçables, flèches de sorties colorées selon les conditions, création de sortie par glisser-déposer, sorties réciproques en un clic, auto-layout et miniatures d'art.
+Onglet **Carte** : nœuds de pièces déplaçables, flèches de sorties colorées selon les conditions, création de sortie par glisser-déposer, sorties réciproques en un clic, auto-layout et miniatures d'art. Le plan s'exporte en **PNG** et **PDF** (menu Fichier ou barre d'outils de la carte).
 
 ![Vue carte : pièces reliées par leurs sorties.](docs/images/editor-map.png)
+
+![Plan exporté en PNG.](docs/images/map-export.png)
 
 Onglet **Assets** : statut de chaque illustration (manquante, dimensions incorrectes), aperçu, import/remplacement, génération de placeholders et rapport des fichiers inutilisés.
 

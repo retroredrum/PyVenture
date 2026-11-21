@@ -117,7 +117,8 @@ Une seule fois : [x]   Priorité : [0]
 - Clic droit : éditer, supprimer, créer la réciproque.
 - Miniature de l'art dans le nœud (option).
 - Auto-layout par proximité ou grille.
-- Positions sauvegardées dans `game.yaml` (`editor.position`) ou dans `.pyventure/map.yaml` pour ne pas polluer le contenu.
+- Positions sauvegardées dans `.pyventure/map.yaml` pour ne pas polluer le contenu.
+- Export du plan en PNG et PDF (titre, flèches colorées, légende, miniatures).
 
 ### 4.6 Vue traduction
 

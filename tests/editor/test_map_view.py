@@ -114,3 +114,11 @@ def test_positions_persist_round_trip(tmp_path: Path, example_path: Path) -> Non
     positions = reloaded.load_map_positions()
     assert positions["bedroom"] == (10, 20)
     assert positions["cave"] == (30, 40)
+
+
+def test_export_to_png_and_pdf(view: MapView, tmp_path: Path) -> None:
+    png = view.export_to(tmp_path / "plan.png")
+    assert png is not None and png.is_file()
+    pdf = view.export_to(tmp_path / "plan.pdf")
+    assert pdf is not None and pdf.is_file()
+    assert pdf.read_bytes()[:4] == b"%PDF"

@@ -187,6 +187,7 @@ Les phases 4 à 6 enrichissent l'ensemble mais ne bloquent pas le MVP.
 - [x] Vue assets : lister, prévisualiser, importer, remplacer
 - [x] Vérification dimensions/format, génération de placeholder
 - [x] Rapport des assets manquants ou inutilisés
+- [x] Export du plan en PNG et PDF
 
 **Critère de sortie :** éditer la carte visuellement, importer une image et la voir dans le jeu.
 

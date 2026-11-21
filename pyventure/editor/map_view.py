@@ -1,43 +1,25 @@
-"""Vue carte : nœuds de pièces, flèches de sorties, glisser-déposer."""
+"""Vue carte : nœuds de pièces, flèches de sorties, glisser-déposer, export."""
 
 from __future__ import annotations
 
 import tkinter as tk
-from collections import deque
 from collections.abc import Callable
-from tkinter import ttk
+from pathlib import Path
+from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
 from ruamel.yaml.comments import CommentedMap
 
+from . import map_export, map_model
 from .document import ProjectDocument
-
-NODE_W = 170
-NODE_H = 96
-GRID_X = 230
-GRID_Y = 165
-MARGIN = 60
-THUMB = (96, 54)
-PORT_RADIUS = 6
-
-DIRECTION_OFFSETS: dict[str, tuple[int, int]] = {
-    "n": (0, -1),
-    "s": (0, 1),
-    "e": (1, 0),
-    "w": (-1, 0),
-    "u": (1, -1),
-    "d": (-1, 1),
-    "in": (0, 1),
-    "out": (0, -1),
-}
-ORDERED_DIRECTIONS = ["e", "w", "n", "s", "u", "d"]
-
-EDGE_COLORS = {
-    "plain": "#8899aa",
-    "conditional": "#e0a040",
-    "hidden": "#6fa8dc",
-    "locked": "#d96a6a",
-}
+from .map_model import (
+    EDGE_COLORS,
+    MARGIN,
+    NODE_H,
+    NODE_W,
+    PORT_RADIUS,
+    THUMB,
+)
 
 
 class MapView(ttk.Frame):
@@ -87,23 +69,21 @@ class MapView(ttk.Frame):
     def _build_toolbar(self) -> None:
         bar = ttk.Frame(self)
         bar.pack(fill="x", padx=2, pady=2)
-        ttk.Button(bar, text="Auto-layout", command=self.auto_layout).pack(side="left", padx=2)
-        ttk.Button(bar, text="Sorties réciproques", command=self.make_reciprocal).pack(
-            side="left", padx=2
-        )
-        ttk.Button(bar, text="Ajuster", command=self.fit).pack(side="left", padx=2)
-        ttk.Button(bar, text="Enregistrer les positions", command=self.save_positions).pack(
-            side="left", padx=2
-        )
-        self.hint = ttk.Label(
+        buttons = [
+            ("Auto-layout", self.auto_layout),
+            ("Sorties réciproques", self.make_reciprocal),
+            ("Ajuster", self.fit),
+            ("Exporter PNG…", self.export_png),
+            ("Exporter PDF…", self.export_pdf),
+            ("Enregistrer les positions", self.save_positions),
+        ]
+        for text, command in buttons:
+            ttk.Button(bar, text=text, command=command).pack(side="left", padx=2)
+        ttk.Label(
             bar,
-            text=(
-                "Glissez un nœud pour le déplacer ; "
-                "tirez depuis le point à droite pour créer une sortie."
-            ),
+            text="Glissez un nœud ; tirez depuis le point à droite pour créer une sortie.",
             foreground="#666",
-        )
-        self.hint.pack(side="left", padx=8)
+        ).pack(side="left", padx=8)
 
     # -- Données ---------------------------------------------------------
     def rooms(self) -> dict[str, Any]:
@@ -127,42 +107,8 @@ class MapView(ttk.Frame):
 
     # -- Disposition -----------------------------------------------------
     def _auto_layout(self) -> dict[str, tuple[int, int]]:
-        rooms = self.rooms()
-        if not rooms:
-            return {}
-        start = str(self.document.meta().get("start_room") or next(iter(rooms)))
-        if start not in rooms:
-            start = next(iter(rooms))
-        cells: dict[tuple[int, int], str] = {(0, 0): start}
-        placed: dict[str, tuple[int, int]] = {start: (0, 0)}
-        queue: deque[str] = deque([start])
-        while queue:
-            current = queue.popleft()
-            cx, cy = placed[current]
-            exits = rooms[current].get("exits") if isinstance(rooms[current], dict) else None
-            if not isinstance(exits, dict):
-                continue
-            for direction, value in exits.items():
-                target = value if isinstance(value, str) else (value or {}).get("room")
-                if not isinstance(target, str) or target in placed or target not in rooms:
-                    continue
-                dx, dy = DIRECTION_OFFSETS.get(str(direction), (1, 0))
-                candidate = (cx + dx, cy + dy)
-                while candidate in cells:
-                    candidate = (candidate[0] + 1, candidate[1] + 1)
-                cells[candidate] = target
-                placed[target] = candidate
-                queue.append(target)
-        # Rooms non atteints : placés à la suite.
-        row = max((cell[1] for cell in cells), default=0) + 1
-        for room_id in rooms:
-            if room_id not in placed:
-                placed[room_id] = (0, row)
-                row += 1
-        return {
-            room_id: (MARGIN + cell[0] * GRID_X, MARGIN + cell[1] * GRID_Y)
-            for room_id, cell in placed.items()
-        }
+        start = str(self.document.meta().get("start_room") or "")
+        return map_model.auto_layout(self.rooms(), start)
 
     def auto_layout(self) -> None:
         self.positions = self._auto_layout()
@@ -181,8 +127,7 @@ class MapView(ttk.Frame):
         return x, y, NODE_W, NODE_H
 
     def _center(self, room_id: str) -> tuple[int, int]:
-        x, y, w, h = self._rect(room_id)
-        return x + w // 2, y + h // 2
+        return map_model.center(self.positions.get(room_id, (MARGIN, MARGIN)))
 
     def _port(self, room_id: str) -> tuple[int, int]:
         x, y, w, h = self._rect(room_id)
@@ -197,7 +142,7 @@ class MapView(ttk.Frame):
             if not isinstance(exits, dict):
                 continue
             for direction, value in exits.items():
-                target = value if isinstance(value, str) else (value or {}).get("room")
+                target = map_model.exit_target(value)
                 if target in rooms:
                     self._draw_edge(room_id, str(target), value, str(direction))
         for room_id in rooms:
@@ -220,40 +165,19 @@ class MapView(ttk.Frame):
         )
 
     def _edge_style(self, value: Any) -> str:
-        if isinstance(value, dict):
-            if value.get("locked_message"):
-                return "locked"
-            if value.get("hidden"):
-                return "hidden"
-            if value.get("when"):
-                return "conditional"
-        return "plain"
+        return map_model.edge_style(value)
 
     def _draw_edge(self, source: str, target: str, value: Any, direction: str) -> None:
-        start = self._edge_point(source, target)
-        end = self._edge_point(target, source)
-        style = self._edge_style(value)
+        start = map_model.edge_point(self.positions[source], self.positions[target])
+        end = map_model.edge_point(self.positions[target], self.positions[source])
+        style = map_model.edge_style(value)
         color = EDGE_COLORS[style]
         dash = (6, 4) if style == "hidden" else None
         self.canvas.create_line(*start, *end, fill=color, width=2, arrow=tk.LAST, dash=dash)
-        label = direction
         mid = ((start[0] + end[0]) // 2, (start[1] + end[1]) // 2)
         self.canvas.create_text(
-            mid[0], mid[1] - 8, text=label, fill=color, font=("TkDefaultFont", 8)
+            mid[0], mid[1] - 8, text=direction, fill=color, font=("TkDefaultFont", 8)
         )
-
-    def _edge_point(self, from_room: str, to_room: str) -> tuple[int, int]:
-        x, y, w, h = self._rect(from_room)
-        cx, cy = x + w // 2, y + h // 2
-        tx, ty = self._center(to_room)
-        dx, dy = tx - cx, ty - cy
-        if dx == 0 and dy == 0:
-            return cx, cy
-        # Intersection avec le bord du rectangle.
-        scale_x = (w / 2) / abs(dx) if dx else float("inf")
-        scale_y = (h / 2) / abs(dy) if dy else float("inf")
-        scale = min(scale_x, scale_y)
-        return int(cx + dx * scale), int(cy + dy * scale)
 
     def _draw_node(self, room_id: str) -> None:
         x, y, w, h = self._rect(room_id)
@@ -267,7 +191,6 @@ class MapView(ttk.Frame):
             fill="#2a2a38",
             outline=outline,
             width=3 if selected else 2,
-            tags=(f"node:{room_id}",),
         )
         room = self.rooms().get(room_id) or {}
         art = room.get("art") if isinstance(room, dict) else None
@@ -288,7 +211,6 @@ class MapView(ttk.Frame):
             py + PORT_RADIUS,
             fill="#5a5a7a",
             outline="#9a9ab5",
-            tags=(f"port:{room_id}",),
         )
 
     def _thumbnail(self, room_id: str, art: Any) -> Any:
@@ -305,7 +227,7 @@ class MapView(ttk.Frame):
             with Image.open(path) as image:
                 image = image.convert("RGBA")
                 image.thumbnail(THUMB)
-            photo = ImageTk.PhotoImage(image)
+                photo = ImageTk.PhotoImage(image)
         except Exception:  # noqa: BLE001 - aperçu facultatif
             return None
         self._thumbnails[room_id] = photo
@@ -378,14 +300,12 @@ class MapView(ttk.Frame):
             self.save_positions()
 
     def _on_double_click(self, event: tk.Event) -> None:
-        x, y = self._event_xy(event)
-        room_id = self._room_at(x, y)
+        room_id = self._room_at(*self._event_xy(event))
         if room_id is not None:
             self.on_open(room_id)
 
     def _on_right_click(self, event: tk.Event) -> None:
-        x, y = self._event_xy(event)
-        room_id = self._room_at(x, y)
+        room_id = self._room_at(*self._event_xy(event))
         if room_id is None:
             return
         self.selected = room_id
@@ -414,35 +334,21 @@ class MapView(ttk.Frame):
         self._draw()
 
     def _free_direction(self, source: str, target: str) -> str:
-        exits = self.rooms()[source].get("exits") or {}
-        preferred = self._guess_direction(source, target)
-        for direction in [preferred, *ORDERED_DIRECTIONS]:
-            if direction not in exits:
-                return direction
-        return preferred
+        room = self.rooms()[source]
+        return map_model.free_direction(room, self.positions[source], self.positions[target])
 
     def _guess_direction(self, source: str, target: str) -> str:
-        sx, sy = self._center(source)
-        tx, ty = self._center(target)
-        dx, dy = tx - sx, ty - sy
-        if abs(dx) >= abs(dy):
-            return "e" if dx >= 0 else "w"
-        return "s" if dy >= 0 else "n"
+        return map_model.guess_direction(self.positions[source], self.positions[target])
 
     def _reciprocal_for(self, room_id: str) -> None:
         exits = self.rooms()[room_id].get("exits") or {}
+        targets = {map_model.exit_target(value) for value in exits.values()}
         changed = False
-        for target in {
-            value if isinstance(value, str) else (value or {}).get("room")
-            for value in exits.values()
-        }:
+        for target in targets:
             if not isinstance(target, str) or target not in self.rooms():
                 continue
             target_exits = self.rooms()[target].get("exits") or {}
-            back = [
-                value if isinstance(value, str) else (value or {}).get("room")
-                for value in target_exits.values()
-            ]
+            back = {map_model.exit_target(value) for value in target_exits.values()}
             if room_id in back:
                 continue
             self.document.snapshot()
@@ -472,3 +378,29 @@ class MapView(ttk.Frame):
         self.document.touch()
         self.on_change()
         self._draw()
+
+    # -- Export ----------------------------------------------------------
+    def export_png(self) -> Path | None:
+        return self._export("png")
+
+    def export_pdf(self) -> Path | None:
+        return self._export("pdf")
+
+    def _export(self, fmt: str) -> Path | None:
+        game_id = str(self.document.meta().get("id", "plan"))
+        path = filedialog.asksaveasfilename(
+            title=f"Exporter le plan ({fmt.upper()})",
+            defaultextension=f".{fmt}",
+            initialfile=f"{game_id}-plan.{fmt}",
+            filetypes=[(fmt.upper(), f"*.{fmt}"), ("Tous les fichiers", "*")],
+        )
+        if not path:
+            return None
+        return self.export_to(Path(path), fmt)
+
+    def export_to(self, path: Path | str, fmt: str | None = None) -> Path | None:
+        try:
+            return map_export.export(self.document, path, fmt, positions=self.positions)
+        except Exception as exc:  # noqa: BLE001 - affiché à l'utilisateur
+            messagebox.showerror("Erreur", f"Export impossible : {exc}")
+            return None
