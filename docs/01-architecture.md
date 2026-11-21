@@ -233,7 +233,7 @@ Format JSON versionné :
 ## 9. Graphismes avec pygame
 
 - `ArtResolver` choisit l'image : variante de pièce > pièce > placeholder.
-- Résolution de base **320×180**, scale entier, filtre nearest.
+- Résolution de base **320×180** ; l'image est agrandie pour **remplir toute la zone d'art** (échelle fractionnaire, filtre nearest), y compris si la source est de basse résolution.
 - Chargement via `pygame.image.load`, conversion `convert_alpha()`, cache côté UI uniquement.
 - Agrandissement via `pygame.transform.scale` (pas `smoothscale`).
 - Placeholder déterministe généré avec Pillow si l'asset manque.

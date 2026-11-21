@@ -32,12 +32,12 @@ def test_expected_sizes(example_path: Path) -> None:
     assert assets.expected_size(document.data, game_object) == (32, 32)
 
 
-def test_statuses_report_missing(example_path: Path) -> None:
+def test_statuses_report_missing(example_path: Path, tmp_path: Path) -> None:
     document = _document(example_path)
-    statuses = assets.statuses(document.root, document.data)
+    statuses = assets.statuses(tmp_path, document.data)
     assert statuses
     assert all(not status.exists for status in statuses)
-    assert assets.missing(document.root, document.data)
+    assert assets.missing(tmp_path, document.data)
 
 
 def test_make_placeholder_then_detected(tmp_path: Path, example_path: Path) -> None:

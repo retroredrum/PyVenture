@@ -45,7 +45,7 @@ La fenêtre graphique nécessite pygame : `pip install -e ".[gui]"`. Le mode ter
 
 ![Thème clair et texte agrandi.](docs/images/pygame-light.png)
 
-Dans la fenêtre : `Échap` ouvre le menu, `Tab` complète, `↑`/`↓` parcourt l'historique, la molette et `PageUp`/`PageDown` font défiler le texte.
+Dans la fenêtre : `Échap` ouvre le menu, `Tab` complète, `↑`/`↓` parcourt l'historique, la molette et `PageUp`/`PageDown` font défiler le texte. L'illustration de la pièce remplit toute la zone d'art (mise à l'échelle automatique, y compris en agrandissant une image basse résolution).
 
 Commandes : `regarder`, `prendre <objet>`, `lâcher <objet>`, `utiliser <objet>`, `examiner <objet>`, `inventaire`, `score`, directions (`n/s/e/w/u/d`, `nord`…), `sauvegarder`, `charger`, `annuler`, `langue en`, `quitter`. En anglais : `look`, `take`, `drop`, `use`, `examine`, `inventory`, `score`, `north`…
 

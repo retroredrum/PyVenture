@@ -64,6 +64,41 @@ def test_art_placeholder_size(project: GameProject) -> None:
     pygame.quit()
 
 
+def test_fit_size_fills_available_area() -> None:
+    assert ArtView.fit_size((320, 180), (800, 450)) == (800, 450)
+    assert ArtView.fit_size((320, 180), (825, 442)) == (786, 442)
+    assert ArtView.fit_size((320, 180), (100, 100)) == (100, 56)
+    assert ArtView.fit_size((0, 0), (10, 10)) == (0, 0)
+
+
+def test_fit_size_upscales_low_resolution() -> None:
+    width, height = ArtView.fit_size((32, 32), (640, 360))
+    assert width == 360
+    assert height == 360
+
+
+def test_layout_art_matches_aspect(project: GameProject, tmp_path) -> None:
+    app = GameApp(project, save_path=tmp_path / "save.json", size=(960, 720))
+    layout = app.layout()
+    assert layout.art.height > 0
+    ratio = 320 / 180
+    assert abs(layout.art.width / layout.art.height - ratio) < 0.05
+
+    scaled, _position = app.art_view.scaled(app.art_hint, app.state, layout.art)
+    assert abs(scaled.get_width() - layout.art.width) <= 2
+    assert abs(scaled.get_height() - layout.art.height) <= 2
+    pygame.quit()
+
+
+def test_layout_art_fills_on_small_window(project: GameProject, tmp_path) -> None:
+    app = GameApp(project, save_path=tmp_path / "save.json", size=(640, 480))
+    layout = app.layout()
+    scaled, _position = app.art_view.scaled(app.art_hint, app.state, layout.art)
+    assert scaled.get_width() == layout.art.width
+    assert scaled.get_height() == layout.art.height
+    pygame.quit()
+
+
 def test_command_input_history_and_completion() -> None:
     command = CommandInput(Theme(), Fonts())
     command.text = "regarder"

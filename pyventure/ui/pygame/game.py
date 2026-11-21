@@ -320,11 +320,19 @@ class GameApp:
     def layout(self) -> Layout:
         width, height = self.screen.get_size()
         sidebar_width = min(280, max(180, width // 4))
-        top_height = int((height - INPUT_HEIGHT) * 0.52)
+        available_height = height - INPUT_HEIGHT
+        art_width, art_height = self.art_view.base_size
+        ratio = art_width / art_height if art_height else 16 / 9
+        # La zone d'art adopte le rapport de l'image pour qu'elle la remplisse
+        # entièrement (aucune marge), en gardant de la place pour le transcript.
+        max_art_height = max(80, available_height - 140)
+        top_height = min(max_art_height, int((width - sidebar_width) / ratio))
+        shown_width = min(width - sidebar_width, int(top_height * ratio))
+        left = max(0, (width - sidebar_width - shown_width) // 2)
         return Layout(
-            art=pygame.Rect(0, 0, width - sidebar_width, top_height),
+            art=pygame.Rect(left, 0, shown_width, top_height),
             sidebar=pygame.Rect(width - sidebar_width, 0, sidebar_width, top_height),
-            transcript=pygame.Rect(0, top_height, width, height - INPUT_HEIGHT - top_height),
+            transcript=pygame.Rect(0, top_height, width, available_height - top_height),
             command=pygame.Rect(0, height - INPUT_HEIGHT, width, INPUT_HEIGHT),
         )
 

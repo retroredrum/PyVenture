@@ -40,12 +40,12 @@ et le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
 ### Ajouté — Phase 2 (fenêtre pygame)
 
 - Fenêtre graphique `pyventure/ui/pygame/` : art pixel art en haut, transcript défilant au centre, inventaire à droite, saisie en bas.
-- `ArtView` : agrandissement entier au plus proche voisin, variantes de pièce, cache de surfaces et placeholders déterministes nommés d'après la pièce.
-- Transcript avec wrapping, styles sémantiques, défilement (molette, PageUp/PageDown) et barre de défilement.
+- `ArtView` : agrandissement entier au plus proche voisin, variantes de pièce, cache de surfaces et placeholders déterministes nommés d'après la pièce.- Transcript avec wrapping, styles sémantiques, défilement (molette, PageUp/PageDown) et barre de défilement.
 - Saisie clavier : caractères, retour arrière, historique (`↑`/`↓`), complétion (`Tab`).
 - Panneau d'inventaire avec icônes d'objets (placeholder lettre si l'asset manque).
 - Menu en jeu (`Échap`) : nouvelle partie, sauvegarder, charger, langue, thème, taille du texte, aide, quitter.
 - Thème sombre/clair et trois tailles de police, applicables à chaud.
+- Les illustrations de pièce **remplissent toute la zone d'art** (mise à l'échelle fractionnaire, agrandissement si la résolution est faible) ; la zone adopte le rapport de l'image pour éviter les marges.
 - Transition en fondu entre deux pièces.
 - Redimensionnement de fenêtre et letterboxing, autosave et reprise partagés avec le terminal.
 - `python3 -m pyventure play --gui` et option `--size LxH`.

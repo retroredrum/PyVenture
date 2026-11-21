@@ -79,15 +79,13 @@ class ArtView:
     def scaled(
         self, hint: ArtHint | None, state: GameState, rect: pygame.Rect
     ) -> tuple[pygame.Surface, tuple[int, int]]:
-        """Renvoie la surface agrandie et sa position centrée dans ``rect``."""
+        """Renvoie la surface agrandie au maximum de ``rect`` et sa position centrée."""
         surface = self.surface_for(hint, state)
-        scale = self.integer_scale(surface.get_size(), rect.size)
-        scaled = pygame.transform.scale(
-            surface, (surface.get_width() * scale, surface.get_height() * scale)
-        )
+        target = self.fit_size(surface.get_size(), rect.size)
+        scaled = pygame.transform.scale(surface, target)
         position = (
-            rect.x + (rect.width - scaled.get_width()) // 2,
-            rect.y + (rect.height - scaled.get_height()) // 2,
+            rect.x + (rect.width - target[0]) // 2,
+            rect.y + (rect.height - target[1]) // 2,
         )
         return scaled, position
 
@@ -102,10 +100,16 @@ class ArtView:
         target.blit(scaled, position)
 
     @staticmethod
-    def integer_scale(source: tuple[int, int], available: tuple[int, int]) -> int:
-        width_scale = available[0] // max(1, source[0])
-        height_scale = available[1] // max(1, source[1])
-        return max(1, min(width_scale, height_scale))
+    def fit_size(source: tuple[int, int], available: tuple[int, int]) -> tuple[int, int]:
+        """Taille maximale qui remplit ``available`` en gardant les proportions.
+
+        L'échelle est fractionnaire : une image basse résolution est agrandie
+        jusqu'à occuper toute la zone disponible.
+        """
+        if source[0] <= 0 or source[1] <= 0 or available[0] <= 0 or available[1] <= 0:
+            return source
+        scale = min(available[0] / source[0], available[1] / source[1])
+        return max(1, round(source[0] * scale)), max(1, round(source[1] * scale))
 
     def object_surface(self, object_id: str, state: GameState) -> pygame.Surface | None:
         path = self.resolver.object_art(object_id, state)
